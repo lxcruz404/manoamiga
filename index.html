@@ -1,0 +1,1289 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ManoAmiga</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: en PC, un celular de 390 px con la app y a la derecha el panel de sustentación (base de datos); en teléfono, la app ocupa la pantalla y el panel se abre como hoja. Un solo tema claro, por diseño (paleta ManoAmiga). */
+:root{
+  color-scheme:light;
+  --navy:#0E1A2F; --navy-deep:#0A1428; --navy-field:#111F3D; --navy2:#1C2C52;
+  --blue:#2F6BFF; --blue-light:#6F9BFF; --blue-soft:#E8EFFF;
+  --green:#17C08E; --green-dark:#0A8A63; --green-soft:#E3F8F1;
+  --red:#E5484D; --red-text:#8E1B1B; --red-soft:#FDE8E8;
+  --orange:#B76E00; --orange-bar:#F5A524; --orange-soft:#FFF3DF;
+  --bg:#F4F7FC; --white:#FFFFFF; --line:#E3EAF7; --gray:#586174; --gray-light:#9DABC8;
+  --ink:#0E1A2F; --desk:#E7EDF7;
+  --f:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+html,body{height:100%}
+body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--f);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== Escenario PC ===== */
+.stage{min-height:100%;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-block:14px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));border-bottom:1px solid #D5DEEC;background:var(--white)}
+.top .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;letter-spacing:-.01em}
+.top .brand small{display:block;font-weight:500;font-size:11.5px;color:var(--gray);letter-spacing:0}
+.top .sp{flex:1}
+.wrap{flex:1;display:flex;gap:28px;justify-content:center;align-items:flex-start;padding-block:22px 32px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.device{width:390px;flex:none;height:min(844px,calc(100vh - 120px));min-height:620px;border-radius:54px;background:var(--navy-deep);padding:11px;box-shadow:0 30px 60px rgba(10,20,40,.28),0 0 0 1px #000 inset}
+.screen{width:100%;height:100%;border-radius:44px;overflow:hidden;background:var(--bg);display:flex;flex-direction:column;position:relative}
+
+/* ===== Panel de sustentación ===== */
+.panel{width:min(600px,100%);min-width:0;height:min(844px,calc(100vh - 120px));min-height:620px;background:var(--white);border-radius:24px;box-shadow:0 10px 30px rgba(10,20,40,.08);display:flex;flex-direction:column;overflow:hidden;border:1px solid #DCE4F1}
+.p-head{padding:16px 20px 0;border-bottom:1px solid var(--line)}
+.p-head .row1{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.p-head h2{font-size:15px;font-weight:800}
+.p-head p{font-size:12px;color:var(--gray);margin-top:2px}
+.p-tabs{display:flex;gap:2px;margin-top:12px;overflow-x:auto}
+.p-tabs button{all:unset;cursor:pointer;padding:9px 12px;font-size:13px;font-weight:600;color:var(--gray);border-bottom:2px solid transparent;white-space:nowrap}
+.p-tabs button.on{color:var(--blue);border-bottom-color:var(--blue)}
+.p-tabs button:focus-visible{outline:2px solid var(--blue)}
+.p-body{flex:1;overflow:auto;padding:16px 20px 24px;display:flex;flex-direction:column;gap:14px;min-height:0}
+.p-sec{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray)}
+.chip-t{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:var(--blue-soft);color:var(--blue);font-weight:700;font-size:11.5px;font-family:var(--mono);cursor:pointer;border:0}
+.chip-t:hover{background:#D9E5FF}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+pre.sql{margin:0;background:var(--navy);color:#DCE6FF;border-radius:12px;padding:12px 14px;font-family:var(--mono);font-size:11.5px;line-height:1.55;overflow-x:auto;white-space:pre}
+pre.sql .k{color:var(--blue-light)}
+.tbl-w{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:12px}
+th{background:var(--bg);text-align:left;font-weight:700;color:var(--gray);padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap;font-family:var(--mono);font-size:11px}
+td{padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+td.wrapc{white-space:normal;min-width:180px}
+.rule{border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.rule .rh{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.rule b{font-size:13px}
+.rule .src{font-family:var(--mono);font-size:11px;color:var(--gray)}
+.res{border-radius:10px;padding:8px 10px;font-family:var(--mono);font-size:11.5px}
+.res.err{background:var(--red-soft);color:var(--red-text)}
+.res.ok{background:var(--green-soft);color:var(--green-dark)}
+.logi{border-left:3px solid var(--line);padding:2px 0 2px 10px;font-size:12px}
+.logi.ok{border-color:var(--green)}
+.logi.err{border-color:var(--red)}
+.logi code{font-family:var(--mono);font-size:11px;color:var(--navy);display:block;white-space:pre-wrap;word-break:break-word}
+.logi .m{color:var(--gray);font-size:11px}
+.sbtn{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:9px;background:var(--blue-soft);color:var(--blue);font-weight:700;font-size:12px;white-space:nowrap}
+.sbtn:hover{background:#D9E5FF}
+.sbtn.dark{background:var(--navy);color:#fff}
+.sbtn:focus-visible{outline:2px solid var(--blue)}
+.rolesw{display:flex;gap:6px;flex-wrap:wrap}
+.rolesw button{all:unset;cursor:pointer;padding:6px 11px;border-radius:99px;border:1px solid #CBD6E8;font-size:12px;font-weight:600;color:var(--gray)}
+.rolesw button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.rolesw button:focus-visible{outline:2px solid var(--blue)}
+.fab{display:none}
+
+/* ===== App (dentro del celular) ===== */
+.sbar{display:flex;justify-content:space-between;align-items:center;padding:14px 30px 6px;font-weight:700;font-size:14px;color:#fff;background:var(--navy);flex:none;position:relative}
+.sbar .isl{position:absolute;left:50%;top:9px;transform:translateX(-50%);width:118px;height:32px;border-radius:20px;background:var(--navy-deep)}
+.hdr{background:var(--navy);color:#fff;padding:6px 22px 20px;flex:none}
+.hrow{display:flex;justify-content:space-between;align-items:center;min-height:34px;margin-bottom:4px}
+.hbtn{all:unset;cursor:pointer;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:var(--gray-light)}
+.hbtn:hover{background:var(--navy2);color:#fff}
+.hbtn:focus-visible{outline:2px solid var(--blue-light)}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--blue-light)}
+.hdr h1{font-size:22px;font-weight:700;margin-top:4px;letter-spacing:-.01em;line-height:1.2}
+.hdr p{color:var(--gray-light);font-size:13.5px;margin-top:4px}
+.scr{flex:1;overflow-y:auto;padding:18px 18px 28px;display:flex;flex-direction:column;gap:14px;min-height:0}
+.tabs{flex:none;display:grid;grid-template-columns:repeat(4,1fr);background:var(--white);border-top:1px solid var(--line);padding:8px 6px calc(10px + env(safe-area-inset-bottom,0px))}
+.tabs button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11.5px;font-weight:600;color:var(--gray-light);padding:4px 0}
+.tabs button.on{color:var(--blue)}
+.tabs button:focus-visible{outline:2px solid var(--blue);border-radius:8px}
+.card{background:var(--white);border-radius:18px;padding:16px;box-shadow:0 1px 2px rgba(14,26,47,.04),0 6px 16px rgba(14,26,47,.05)}
+.sec{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray)}
+.big{font-size:31px;font-weight:800;letter-spacing:-.02em;line-height:1.05;font-variant-numeric:tabular-nums}
+.big small{font-size:17px;font-weight:600;color:var(--gray);letter-spacing:0}
+.split{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.muted{color:var(--gray)}
+.sm{font-size:12.5px}
+.bar{height:10px;border-radius:6px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:6px;background:var(--blue);transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap}
+.t-green{background:var(--green-soft);color:var(--green-dark)}
+.t-blue{background:var(--blue-soft);color:var(--blue)}
+.t-red{background:var(--red-soft);color:var(--red)}
+.t-orange{background:var(--orange-soft);color:var(--orange)}
+.t-gray{background:var(--line);color:var(--gray)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{all:unset;cursor:pointer;box-sizing:border-box;background:var(--white);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;box-shadow:0 1px 2px rgba(14,26,47,.04),0 6px 16px rgba(14,26,47,.05)}
+.tile:hover{box-shadow:0 0 0 2px var(--blue-soft),0 6px 16px rgba(14,26,47,.06)}
+.tile:focus-visible{outline:2px solid var(--blue)}
+.ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;flex:none}
+.tile b{font-size:15px}
+.tile span{color:var(--gray);font-size:13px;line-height:1.3}
+.ic.blue{background:var(--blue-soft);color:var(--blue)}.ic.green{background:var(--green-soft);color:var(--green-dark)}.ic.orange{background:var(--orange-soft);color:var(--orange)}.ic.red{background:var(--red-soft);color:var(--red)}
+.li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+.li:last-child{border-bottom:0;padding-bottom:0}
+.li .r{color:var(--gray);white-space:nowrap;font-variant-numeric:tabular-nums}
+.btn{all:unset;cursor:pointer;box-sizing:border-box;height:52px;border-radius:14px;background:var(--blue);color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;text-align:center;transition:filter .12s;flex:none}
+.btn:hover{filter:brightness(1.07)}
+.btn:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.btn.sec2{background:var(--blue-soft);color:var(--blue)}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.aviso{border-radius:16px;padding:14px 16px;font-size:13.5px;line-height:1.45}
+.aviso b.t{display:block;font-size:15px;margin-bottom:2px}
+.aviso .ora{display:block;font-size:11.5px;margin-top:6px;opacity:.85;font-family:var(--mono)}
+.av-red{background:var(--red-soft);color:var(--red-text)}.av-red b.t{color:var(--red)}
+.av-green{background:var(--green-soft);color:var(--green-dark)}.av-green b.t{color:var(--green-dark)}
+.av-orange{background:var(--orange-soft);color:var(--orange)}.av-orange b.t{color:var(--orange)}
+.av-blue{background:var(--blue-soft);color:var(--navy)}.av-blue b.t{color:var(--blue)}
+.fld{display:flex;flex-direction:column;gap:4px;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:10px 14px;min-width:0}
+.fld label{font-size:12px;font-weight:600;color:var(--gray)}
+.fld input,.fld select{all:unset;font-size:15px;color:var(--ink);width:100%;min-width:0}
+.fld.bad{border-color:var(--red);box-shadow:0 0 0 3px var(--red-soft)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{all:unset;cursor:pointer;padding:8px 13px;border-radius:99px;background:var(--white);border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--ink)}
+.pill.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.pill:focus-visible{outline:2px solid var(--blue)}
+.qrbox{background:#fff;border:3px solid var(--navy);border-radius:14px;padding:8px;display:grid;place-items:center;flex:none}
+.qrbox img,.qrbox canvas{display:block}
+.mem{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.mem:last-child{border-bottom:0}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--white)}
+.mrow .full{grid-column:1/-1}
+.mrow input{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13.5px;width:100%;background:var(--bg);min-width:0}
+.mrow label{font-size:11px;font-weight:600;color:var(--gray);display:flex;flex-direction:column;gap:3px;min-width:0}
+.mrow label.chk{flex-direction:row;align-items:center;gap:6px;font-size:12.5px}
+.mrow label.chk input{width:auto}
+.toast{position:absolute;left:16px;right:16px;bottom:86px;z-index:20;animation:up .2s ease-out;box-shadow:0 10px 24px rgba(10,20,40,.18);border-radius:16px}
+@keyframes up{from{transform:translateY(8px);opacity:0}}
+
+/* Login */
+.login{background:var(--navy);color:#fff;flex:1;overflow-y:auto;padding:26px 26px 22px;display:flex;flex-direction:column;gap:18px}
+.login h1{font-size:40px;font-weight:800;letter-spacing:-.02em}
+.login .lead{color:var(--gray-light);font-size:16px;line-height:1.4}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--navy2);border-radius:16px;padding:4px}
+.seg button{all:unset;cursor:pointer;text-align:center;padding:11px 0;border-radius:12px;font-weight:700;font-size:15px;color:var(--gray-light)}
+.seg button.on{background:var(--blue);color:#fff}
+.seg button:focus-visible{outline:2px solid var(--blue-light)}
+.lchips{display:flex;flex-wrap:wrap;gap:8px}
+.lchips button{all:unset;cursor:pointer;padding:8px 12px;border-radius:99px;background:var(--navy2);font-size:13px;font-weight:600;color:#C9D4EC}
+.lchips button.on{background:var(--blue);color:#fff}
+.lchips button:focus-visible{outline:2px solid var(--blue-light)}
+.lfld{background:var(--navy-field);border:1px solid #1E2E55;border-radius:16px;padding:10px 16px;display:flex;flex-direction:column;gap:3px}
+.lfld label{font-size:12.5px;color:var(--gray-light);font-weight:600}
+.lfld input{all:unset;font-size:16px;color:#fff;min-width:0}
+.lnote{color:var(--gray-light);font-size:12.5px;text-align:center;line-height:1.5;margin-top:auto}
+.scan{background:var(--navy);border-radius:20px;padding:26px;display:grid;place-items:center;position:relative;overflow:hidden}
+.scan .frame{border:3px solid var(--blue);border-radius:16px;padding:10px;position:relative;background:#fff}
+.scan .line{position:absolute;left:6px;right:6px;height:3px;background:var(--green);box-shadow:0 0 12px var(--green);animation:scan 2.2s ease-in-out infinite alternate;top:10%}
+@keyframes scan{to{top:88%}}
+
+/* PC: solo el celular, centrado */
+.top{display:none}
+.panel{display:none}
+.wrap{align-items:center;padding-block:24px}
+.device{height:min(844px,calc(100vh - 48px))}
+
+@media (max-width:980px){
+  .top{display:none}
+  .stage{height:100%}
+  .wrap{display:block;padding:0;height:100%}
+  .device{width:100%;height:100%;min-height:0;border-radius:0;padding:0;box-shadow:none;background:var(--bg)}
+  .screen{border-radius:0}
+  .sbar{display:none}
+  .hdr{padding-top:calc(12px + env(safe-area-inset-top,0px));padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+  .scr{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:84px}
+  .login{padding-top:calc(30px + env(safe-area-inset-top,0px));padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px));padding-bottom:84px}
+  .panel{display:none}
+  .panel.open{display:flex;position:fixed;inset:0;z-index:60;width:100%;height:100%;min-height:0;border-radius:0;border:0;padding-top:env(safe-area-inset-top,0px)}
+  .p-head{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .p-body{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .fab{display:flex;position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:40;align-items:center;gap:6px;background:var(--navy);color:#fff;border:0;border-radius:99px;padding:10px 14px;font-weight:700;font-size:12.5px;box-shadow:0 8px 20px rgba(10,20,40,.3);cursor:pointer}
+  .fab.login-fab{bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+  .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+}
+</style>
+
+<div id="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+"use strict";
+/* ================= Utilidades ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = n => n == null ? "" : Number(n).toLocaleString("es-CO", {maximumFractionDigits:2});
+const p2 = n => String(n).padStart(2, "0");
+// Fechas como texto 'AAAA-MM-DDTHH:MI'; se comparan en minutos (UTC) para no depender del huso horario.
+const D = s => { if (!s) return null; const [d, t = "00:00"] = s.split(" "); const [dd, mm, yy] = d.split("/"); return `${yy}-${mm}-${dd}T${t}`; };
+const M = s => { const [d, t = "00:00"] = s.split("T"); const [y, m, dd] = d.split("-").map(Number); const [h, mi] = t.split(":").map(Number); return Date.UTC(y, m - 1, dd, h, mi) / 60000; };
+const fromM = m => { const d = new Date(m * 60000); return `${d.getUTCFullYear()}-${p2(d.getUTCMonth() + 1)}-${p2(d.getUTCDate())}T${p2(d.getUTCHours())}:${p2(d.getUTCMinutes())}`; };
+const dmy = s => s ? `${s.slice(8, 10)}/${s.slice(5, 7)}/${s.slice(0, 4)}` : "—";
+const dm = s => s ? `${s.slice(8, 10)}/${s.slice(5, 7)}` : "—";
+const hm = s => s ? s.slice(11, 16) : "";
+const dmyhm = s => s ? `${dmy(s)} ${hm(s)}` : "—";
+const dayStart = s => s.slice(0, 10) + "T00:00";
+const HOY = "2026-10-30";
+function edad(fnac){ const [y, m, d] = fnac.slice(0, 10).split("-").map(Number); const [Y, MM, DD] = HOY.split("-").map(Number); let a = Y - y; if (MM < m || (MM === m && DD < d)) a--; return a; }
+function sha256(str){
+  const bytes = Array.from(new TextEncoder().encode(str));
+  const H = [], K = []; let n = 2, c = 0;
+  const isP = q => { for (let f = 2; f * f <= q; f++) if (q % f === 0) return false; return true; };
+  const fr = x => ((x - Math.floor(x)) * 4294967296) >>> 0;
+  while (c < 64){ if (isP(n)){ if (c < 8) H[c] = fr(Math.pow(n, 1/2)); K[c] = fr(Math.pow(n, 1/3)); c++; } n++; }
+  const l = bytes.length * 8; bytes.push(0x80); while (bytes.length % 64 !== 56) bytes.push(0);
+  const hi = Math.floor(l / 4294967296); for (let i = 3; i >= 0; i--) bytes.push((hi >>> (i * 8)) & 255); for (let i = 3; i >= 0; i--) bytes.push((l >>> (i * 8)) & 255);
+  const rr = (x, r) => (x >>> r) | (x << (32 - r));
+  for (let o = 0; o < bytes.length; o += 64){
+    const w = new Array(64);
+    for (let i = 0; i < 16; i++) w[i] = (bytes[o + 4*i] << 24) | (bytes[o + 4*i + 1] << 16) | (bytes[o + 4*i + 2] << 8) | bytes[o + 4*i + 3];
+    for (let i = 16; i < 64; i++){ const s0 = rr(w[i-15], 7) ^ rr(w[i-15], 18) ^ (w[i-15] >>> 3); const s1 = rr(w[i-2], 17) ^ rr(w[i-2], 19) ^ (w[i-2] >>> 10); w[i] = (w[i-16] + s0 + w[i-7] + s1) | 0; }
+    let [a, b, cc, d, e, f, g, h] = H;
+    for (let i = 0; i < 64; i++){ const S1 = rr(e, 6) ^ rr(e, 11) ^ rr(e, 25); const ch = (e & f) ^ (~e & g); const t1 = (h + S1 + ch + K[i] + w[i]) | 0; const S0 = rr(a, 2) ^ rr(a, 13) ^ rr(a, 22); const mj = (a & b) ^ (a & cc) ^ (b & cc); const t2 = (S0 + mj) | 0; h = g; g = f; f = e; e = (d + t1) | 0; d = cc; cc = b; b = a; a = (t1 + t2) | 0; }
+    H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + cc) | 0; H[3] = (H[3] + d) | 0; H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+  }
+  return H.map(x => (x >>> 0).toString(16).padStart(8, "0")).join("").toUpperCase();
+}
+
+/* ================= Esquema: 21 tablas (1_SCRIPT_CREACION.sql) ================= */
+const SCHEMA = {
+  DEPARTAMENTO:{cols:["id_departamento","nombre"], pk:["id_departamento"], pkn:"C_DEPARTAMENTO_PK"},
+  MUNICIPIO:{cols:["id_municipio","nombre","id_departamento"], pk:["id_municipio"], pkn:"C_MUNICIPIO_PK"},
+  DESASTRE:{cols:["id_desastre","nombre","tipo","magnitud","fecha","descripcion","estado"], pk:["id_desastre"], pkn:"C_DESASTRE_PK"},
+  AFECTACION:{cols:["id_desastre","id_municipio","nivel_dano","habitantes_riesgo","porc_infraestructura","falla_agua_energia"], pk:["id_desastre","id_municipio"], pkn:"C_AFECTACION_PK"},
+  PERSONAL:{cols:["id_personal","documento","nombres","apellidos","correo","contrasena"], pk:["id_personal"], pkn:"C_PERSONAL_PK"},
+  TELEFONO_PERSONAL:{cols:["id_personal","telefono"], pk:["id_personal","telefono"], pkn:"C_TEL_PERSONAL_PK"},
+  ADMINISTRADOR:{cols:["id_personal","cargo"], pk:["id_personal"], pkn:"C_ADMINISTRADOR_PK"},
+  COORDINADOR:{cols:["id_personal","fecha_asignacion"], pk:["id_personal"], pkn:"C_COORDINADOR_PK"},
+  RESCATISTA:{cols:["id_personal","institucion","especialidad","disponibilidad"], pk:["id_personal"], pkn:"C_RESCATISTA_PK"},
+  SEDE:{cols:["id_sede","nombre","tipo","direccion","capacidad","id_municipio","id_coordinador"], pk:["id_sede"], pkn:"C_SEDE_PK"},
+  FAMILIA:{cols:["id_familia","estado","id_sede"], pk:["id_familia"], pkn:"C_FAMILIA_PK"},
+  BENEFICIARIO:{cols:["id_beneficiario","documento","nombres","apellidos","fecha_nacimiento","lesionado","jefe_hogar","contrasena","id_familia"], pk:["id_beneficiario"], pkn:"C_BENEFICIARIO_PK"},
+  INSUMO:{cols:["id_insumo","nombre","descripcion","unidad","perecedero","maximo_semanal"], pk:["id_insumo"], pkn:"C_INSUMO_PK"},
+  LOTE:{cols:["id_lote","origen","fecha_recepcion","fecha_vencimiento","cant_recibida","cant_disponible","id_insumo","id_sede"], pk:["id_lote"], pkn:"C_LOTE_PK"},
+  SOLICITUD:{cols:["id_solicitud","fecha","prioridad","estado","id_personal","id_municipio"], pk:["id_solicitud"], pkn:"C_SOLICITUD_PK"},
+  SOLICITUD_INSUMO:{cols:["id_solicitud","id_insumo","cantidad_requerida","cantidad_asignada"], pk:["id_solicitud","id_insumo"], pkn:"C_SOL_INSUMO_PK"},
+  DESPACHO:{cols:["id_despacho","fecha","placa","conductor","estado","fecha_recibido","id_solicitud"], pk:["id_despacho"], pkn:"C_DESPACHO_PK"},
+  DESPACHO_LOTE:{cols:["id_despacho","id_lote","cantidad"], pk:["id_despacho","id_lote"], pkn:"C_DESP_LOTE_PK"},
+  ENTREGA:{cols:["id_familia","id_insumo","fecha","cantidad"], pk:["id_familia","id_insumo","fecha"], pkn:"C_ENTREGA_PK"},
+  CUADRILLA:{cols:["id_cuadrilla","nombre","fecha_inicio","fecha_fin","id_municipio"], pk:["id_cuadrilla"], pkn:"C_CUADRILLA_PK"},
+  CUADRILLA_RESCATISTA:{cols:["id_cuadrilla","id_personal"], pk:["id_cuadrilla","id_personal"], pkn:"C_CUAD_RESC_PK"}
+};
+
+/* ================= Motor: triggers, CHECK, UNIQUE y procedimiento ================= */
+class Ora extends Error { constructor(code, msg, src){ super(msg); this.code = code; this.src = src; } }
+const raise = (n, msg, src) => { throw new Ora("ORA-" + n, msg, src); };
+let DB, S;
+const T = name => DB[name];
+const find = (t, pred) => DB[t].find(pred);
+const filt = (t, pred) => DB[t].filter(pred);
+function pkCheck(t, row){ const sc = SCHEMA[t]; if (DB[t].some(r => sc.pk.every(k => String(r[k]) === String(row[k])))) raise("00001", `unique constraint (${sc.pkn}) violated`, `llave primaria ${sc.pkn}`); }
+function check(cond, name){ if (!cond) raise("02290", `check constraint (${name}) violated`, `CHECK ${name}`); }
+function put(t, row){ const r = {}; SCHEMA[t].cols.forEach(c => r[c] = row[c] ?? null); DB[t].push(r); return r; }
+function now(){ S.clock = fromM(M(S.clock) + 1); return S.clock; }
+function afChecks(n){
+  check(["Bajo","Medio","Alto","Crítico"].includes(n.nivel_dano), "C_AFECTACION_NIVEL_CK");
+  check(n.habitantes_riesgo >= 0, "C_AFECTACION_HAB_CK");
+  check(n.porc_infraestructura >= 0 && n.porc_infraestructura <= 100, "C_AFECTACION_PORC_CK");
+  check(n.nivel_dano !== "Crítico" || n.porc_infraestructura > 40 || n.falla_agua_energia === "S", "C_AFECTACION_CRITICO_CK");
+}
+function insAfectacion(r){ pkCheck("AFECTACION", r); afChecks(r); return put("AFECTACION", r); }
+function updAfectacion(a, v){ afChecks({...a, ...v}); Object.assign(a, v); }
+// T_LOTE_VALIDAR
+function insLote(r){
+  const sede = find("SEDE", s => s.id_sede === r.id_sede);
+  if (sede.tipo !== "Centro de acopio") raise("20001", "Los lotes solo se reciben en un Centro de acopio.", "trigger T_LOTE_VALIDAR");
+  const ins = find("INSUMO", i => i.id_insumo === r.id_insumo);
+  if (ins.perecedero === "S" && !r.fecha_vencimiento) raise("20002", "Un insumo perecedero debe tener fecha de vencimiento.", "trigger T_LOTE_VALIDAR");
+  if (ins.perecedero === "S" && M(r.fecha_vencimiento) < M(r.fecha_recepcion) + 30 * 1440) raise("20003", "Lote rechazado: vence en menos de 30 dias.", "trigger T_LOTE_VALIDAR");
+  r.cant_disponible = r.cant_recibida;
+  pkCheck("LOTE", r);
+  check(["Donación","Compra pública","Cooperación internacional"].includes(r.origen), "C_LOTE_ORIGEN_CK");
+  check(r.cant_recibida > 0, "C_LOTE_RECIBIDA_CK");
+  return put("LOTE", r);
+}
+const personasActivas = sid => filt("FAMILIA", f => f.id_sede === sid && f.estado === "Activa").reduce((s, f) => s + filt("BENEFICIARIO", b => b.id_familia === f.id_familia).length, 0);
+// T_FAMILIA_VALIDAR
+function insFamilia(r){
+  const s = find("SEDE", x => x.id_sede === r.id_sede);
+  if (s.tipo !== "Albergue") raise("20004", "Las familias solo se alojan en sedes de tipo Albergue.", "trigger T_FAMILIA_VALIDAR");
+  if (r.estado === "Activa" && personasActivas(s.id_sede) >= s.capacidad) raise("20005", "El albergue esta al 100 % de su capacidad.", "trigger T_FAMILIA_VALIDAR");
+  pkCheck("FAMILIA", r);
+  check(["Activa","Inactiva"].includes(r.estado), "C_FAMILIA_ESTADO_CK");
+  return put("FAMILIA", r);
+}
+// T_BENEFICIARIO_VALIDAR
+function insBenef(r){
+  const f = find("FAMILIA", x => x.id_familia === r.id_familia);
+  const s = find("SEDE", x => x.id_sede === f.id_sede);
+  if (f.estado === "Activa" && personasActivas(s.id_sede) >= s.capacidad) raise("20005", "El albergue esta al 100 % de su capacidad.", "trigger T_BENEFICIARIO_VALIDAR");
+  if (r.jefe_hogar === "S" && filt("BENEFICIARIO", b => b.id_familia === r.id_familia && b.jefe_hogar === "S").length > 0) raise("20006", "La familia ya tiene un jefe de hogar.", "trigger T_BENEFICIARIO_VALIDAR");
+  pkCheck("BENEFICIARIO", r);
+  if (DB.BENEFICIARIO.some(b => b.documento === r.documento)) raise("00001", "unique constraint (C_BENEFICIARIO_DOC_UK) violated", "UNIQUE C_BENEFICIARIO_DOC_UK");
+  check(r.jefe_hogar === "N" || !!r.contrasena, "C_BENEF_CLAVE_CK");
+  return put("BENEFICIARIO", r);
+}
+function insSolicitud(r){ pkCheck("SOLICITUD", r); check(["Baja","Media","Alta","Urgente"].includes(r.prioridad), "C_SOLICITUD_PRIOR_CK"); return put("SOLICITUD", r); }
+function insSolInsumo(r){ pkCheck("SOLICITUD_INSUMO", r); check(r.cantidad_requerida > 0, "C_SOL_INSUMO_REQ_CK"); return put("SOLICITUD_INSUMO", r); }
+function insDespacho(r){ pkCheck("DESPACHO", r); check(String(r.placa || "").length === 6, "C_DESPACHO_PLACA_CK"); check(r.estado !== "Entregado" || !!r.fecha_recibido, "C_DESPACHO_RECIBIDO_CK"); return put("DESPACHO", r); }
+// T_DESPACHO_LOTE_SALIDA
+function insDespachoLote(r){
+  const l = find("LOTE", x => x.id_lote === r.id_lote);
+  const d = find("DESPACHO", x => x.id_despacho === r.id_despacho);
+  if (r.cantidad > l.cant_disponible) raise("20007", "La cantidad supera lo disponible en el lote.", "trigger T_DESPACHO_LOTE_SALIDA");
+  const trunc = M(dayStart(d.fecha));
+  if (l.fecha_vencimiento && M(l.fecha_vencimiento) < trunc) raise("20008", "No se puede despachar un lote vencido.", "trigger T_DESPACHO_LOTE_SALIDA");
+  if (l.fecha_vencimiento){
+    const antes = filt("LOTE", x => x.id_insumo === l.id_insumo && x.id_sede === l.id_sede && x.id_lote !== l.id_lote && x.cant_disponible > 0 && x.fecha_vencimiento && M(x.fecha_vencimiento) >= trunc && M(x.fecha_vencimiento) < M(l.fecha_vencimiento)).length;
+    if (antes > 0) raise("20009", "Primero debe salir el lote que vence mas pronto.", "trigger T_DESPACHO_LOTE_SALIDA");
+  }
+  pkCheck("DESPACHO_LOTE", r);
+  check(r.cantidad > 0, "C_DESP_LOTE_CANT_CK");
+  l.cant_disponible = Math.round((l.cant_disponible - r.cantidad) * 100) / 100;
+  return put("DESPACHO_LOTE", r);
+}
+const integrantes = fid => filt("BENEFICIARIO", b => b.id_familia === fid).length;
+function recibido7(fid, iid, fecha){ const t = M(fecha); return filt("ENTREGA", e => e.id_familia === fid && e.id_insumo === iid && M(e.fecha) > t - 7 * 1440 && M(e.fecha) <= t).reduce((s, e) => s + e.cantidad, 0); }
+// T_ENTREGA_CUPO
+function insEntrega(r){
+  const f = find("FAMILIA", x => x.id_familia === r.id_familia);
+  if (f.estado !== "Activa") raise("20010", "Solo se entregan ayudas a familias activas.", "trigger T_ENTREGA_CUPO");
+  const ins = find("INSUMO", i => i.id_insumo === r.id_insumo);
+  if (recibido7(r.id_familia, r.id_insumo, r.fecha) + r.cantidad > ins.maximo_semanal * integrantes(r.id_familia)) raise("20011", "Entrega rechazada: la familia supera su cupo semanal.", "trigger T_ENTREGA_CUPO");
+  pkCheck("ENTREGA", r);
+  check(r.cantidad > 0, "C_ENTREGA_CANT_CK");
+  return put("ENTREGA", r);
+}
+// T_CUAD_RESC_VALIDAR
+function insCuadResc(r){
+  const re = find("RESCATISTA", x => x.id_personal === r.id_personal);
+  if (re.disponibilidad === "Inactivo") raise("20012", "Un rescatista Inactivo no se asigna a cuadrillas.", "trigger T_CUAD_RESC_VALIDAR");
+  const c = find("CUADRILLA", x => x.id_cuadrilla === r.id_cuadrilla);
+  const cruces = filt("CUADRILLA_RESCATISTA", x => x.id_personal === r.id_personal).filter(x => { const o = find("CUADRILLA", y => y.id_cuadrilla === x.id_cuadrilla); return M(o.fecha_inicio) < M(c.fecha_fin) && M(o.fecha_fin) > M(c.fecha_inicio); }).length;
+  if (cruces > 0) raise("20013", "El rescatista ya esta en otra cuadrilla en esas fechas.", "trigger T_CUAD_RESC_VALIDAR");
+  pkCheck("CUADRILLA_RESCATISTA", r);
+  return put("CUADRILLA_RESCATISTA", r);
+}
+// P_REPARTO_PROPORCIONAL: misma lógica del procedimiento (TRUNC y LEAST)
+function repartoFilas(iid, did, desde){
+  const out = [];
+  filt("SOLICITUD", s => s.estado === "Pendiente" && M(s.fecha) >= M(desde)).forEach(s => {
+    const si = find("SOLICITUD_INSUMO", x => x.id_solicitud === s.id_solicitud && x.id_insumo === iid); if (!si) return;
+    const a = find("AFECTACION", x => x.id_municipio === s.id_municipio && x.id_desastre === did); if (!a) return;
+    out.push({s, si, hab:a.habitantes_riesgo});
+  });
+  return out;
+}
+const disponibleInsumo = (iid, desde) => filt("LOTE", l => l.id_insumo === iid && (!l.fecha_vencimiento || M(l.fecha_vencimiento) >= M(desde))).reduce((s, l) => s + l.cant_disponible, 0);
+function calcReparto(disponible, filas){
+  const demanda = filas.reduce((s, f) => s + f.si.cantidad_requerida, 0);
+  const totalHab = filas.reduce((s, f) => s + f.hab, 0);
+  if (demanda > disponible && totalHab === 0) raise("20014", "Los municipios no tienen habitantes en riesgo registrados.", "procedimiento P_REPARTO_PROPORCIONAL");
+  const res = filas.map(f => ({...f, asignado: demanda <= disponible ? f.si.cantidad_requerida : Math.min(f.si.cantidad_requerida, Math.trunc(disponible * f.hab / totalHab))}));
+  return {demanda, totalHab, disponible, res, suficiente: demanda <= disponible};
+}
+function pReparto(iid, did, desde){
+  const filas = repartoFilas(iid, did, desde);
+  const R = calcReparto(disponibleInsumo(iid, desde), filas);
+  R.res.forEach(x => { x.si.cantidad_asignada = x.asignado; x.s.estado = "Asignada"; });
+  return R;
+}
+// Transacción: si algo falla, se deshace todo (ROLLBACK)
+function tx(fn, keep = true){
+  const snap = JSON.stringify(DB), clk = S.clock;
+  try { const r = fn(); if (!keep){ DB = JSON.parse(snap); S.clock = clk; } return {ok:true, r}; }
+  catch(e){ DB = JSON.parse(snap); S.clock = clk; if (e instanceof Ora) return {ok:false, e}; throw e; }
+}
+function logSql(sql, res){ S.log.unshift({t:S.clock, sql, ok:res.ok, err:res.ok ? "" : `${res.e.code}: ${res.e.message}`, src:res.ok ? "" : res.e.src}); S.log = S.log.slice(0, 40); }
+
+/* ================= Datos de prueba (2_SCRIPT_DATOS.sql), pasando por los triggers ================= */
+function seed(){
+  DB = {}; Object.keys(SCHEMA).forEach(t => DB[t] = []);
+  S = {v:4, clock:"2026-10-30T08:00", log:[], reparto:null};
+  [["27","Chocó"],["76","Valle del Cauca"],["66","Risaralda"],["17","Caldas"],["63","Quindío"],["05","Antioquia"],["68","Santander"],["19","Cauca"],["52","Nariño"],["54","Norte de Santander"]].forEach(([a, b]) => put("DEPARTAMENTO", {id_departamento:a, nombre:b}));
+  [["27001","Quibdó","27"],["27361","Istmina","27"],["76001","Cali","76"],["76109","Buenaventura","76"],["76834","Tuluá","76"],["66001","Pereira","66"],["17001","Manizales","17"],["63001","Armenia","63"],["05001","Medellín","05"],["68001","Bucaramanga","68"],["19001","Popayán","19"],["52001","Pasto","52"],["54001","Cúcuta","54"]].forEach(([a, b, c]) => put("MUNICIPIO", {id_municipio:a, nombre:b, id_departamento:c}));
+  [[1,"Terremoto del Occidente 2026","Terremoto",7.4,"12/10/2026 06:40","Sismo con epicentro en el occidente del país; réplicas en Chocó, Valle, Eje Cafetero y Santander.","Activo"],
+   [2,"Réplica fuerte del 14 de octubre","Sismo",5.9,"14/10/2026 22:15","Réplica del terremoto principal con nuevos daños en Chocó.","Activo"],
+   [3,"Deslizamiento vía Istmina - Quibdó","Deslizamiento",null,"16/10/2026 03:30","Deslizamiento provocado por las réplicas y las lluvias.","Activo"],
+   [4,"Inundación de Buenaventura","Inundación",null,"20/10/2026 18:00","Desbordamiento de quebradas en zonas ya afectadas por el sismo.","Activo"],
+   [5,"Inundación del oriente de Cali","Inundación",null,"03/11/2025 05:00","Ola invernal 2025; evento atendido y cerrado.","Cerrado"],
+   [6,"Deslizamiento barrio Aranjuez","Deslizamiento",null,"18/04/2025 16:20","Remoción en masa en ladera de Manizales.","Cerrado"],
+   [7,"Avenida torrencial río Pasto","Avenida torrencial",null,"09/06/2025 02:10","Creciente súbita del río Pasto.","Cerrado"],
+   [8,"Incendio forestal cerro de Bucaramanga","Incendio forestal",null,"14/02/2026 13:00","Incendio en la escarpa occidental durante temporada seca.","Cerrado"],
+   [9,"Vendaval de Cúcuta","Vendaval",null,"22/03/2026 17:45","Vientos fuertes que destecharon viviendas.","Cerrado"],
+   [10,"Sismo de Popayán 2025","Sismo",5.2,"30/09/2025 11:05","Sismo moderado con daños menores en viviendas antiguas.","Cerrado"]
+  ].forEach(([id, n, t, m, f, d, e]) => { pkCheck("DESASTRE", {id_desastre:id}); put("DESASTRE", {id_desastre:id, nombre:n, tipo:t, magnitud:m, fecha:D(f), descripcion:d, estado:e}); });
+  [[1,"27001","Crítico",38000,55,"S"],[1,"27361","Alto",12000,35,"N"],[1,"76001","Medio",25000,12,"N"],[1,"76109","Crítico",30000,45,"S"],[1,"76834","Bajo",4000,8,"N"],[1,"66001","Alto",18000,30,"N"],[1,"17001","Medio",9000,15,"N"],[1,"63001","Alto",15000,28,"S"],[1,"68001","Bajo",2000,5,"N"],[2,"27001","Alto",20000,38,"S"],[2,"27361","Medio",6000,18,"N"],[3,"27361","Crítico",3500,20,"S"],[4,"76109","Alto",14000,25,"N"],[5,"76001","Medio",7000,10,"N"],[6,"17001","Alto",1200,22,"N"],[7,"52001","Medio",3000,14,"N"],[8,"68001","Bajo",500,2,"N"],[9,"54001","Medio",2500,9,"N"],[10,"19001","Bajo",1800,6,"N"]
+  ].forEach(([d, m, n, h, p, f]) => insAfectacion({id_desastre:d, id_municipio:m, nivel_dano:n, habitantes_riesgo:h, porc_infraestructura:p, falla_agua_energia:f}));
+  const PER = [["Carolina","Mejía Duarte","carolina.mejia"],["Andrés Felipe","Rojas Pinto","andres.rojas"],["Natalia","Herrera Cano","natalia.herrera"],["Mauricio","Salazar Vélez","mauricio.salazar"],["Paula Andrea","Zapata Ríos","paula.zapata"],["Hernán Darío","Quintero López","hernan.quintero"],["Laura Cristina","Becerra Gil","laura.becerra"],["Sergio Alejandro","Niño Parra","sergio.nino"],["Diana Patricia","Sierra Mora","diana.sierra"],["Fabián Ernesto","Ardila Rueda","fabian.ardila"],["Yesenia","Mosquera Ibargüen","yesenia.mosquera"],["Ramiro","Palacios Lozano","ramiro.palacios"],["Edna Rocío","Córdoba Rivas","edna.cordoba"],["Wilson","Caicedo Angulo","wilson.caicedo"],["Claudia Marcela","Henao Giraldo","claudia.henao"],["Juan Pablo","Arias Buitrago","juan.arias"],["Mónica Lucía","Varela Ortiz","monica.varela"],["Álvaro José","Perea Chaverra","alvaro.perea"],["Lina María","Toro Osorio","lina.toro"],["Germán Alonso","Castaño Duque","german.castano"],["Jairo Enrique","Moreno Rentería","jairo.moreno"],["Daniela","Ocampo Arango","daniela.ocampo"],["Édgar","Murillo Asprilla","edgar.murillo"],["Viviana Andrea","Rincón Beltrán","viviana.rincon"],["Camilo Ernesto","Vargas León","camilo.vargas"],["Jessica Paola","Restrepo Gil","jessica.restrepo"],["Fredy Alberto","Cardona Marín","fredy.cardona"],["Óscar Iván","Bedoya Hoyos","oscar.bedoya"],["Marcela","Riascos Valencia","marcela.riascos"],["Robinson","Hurtado Mena","robinson.hurtado"]];
+  PER.forEach(([n, a, c], i) => { const doc = String(1001223013 + 37421 * i); put("PERSONAL", {id_personal:i + 1, documento:doc, nombres:n, apellidos:a, correo:c + "@manoamiga.org", contrasena:sha256(`${doc}:Clave-${doc}`)}); });
+  [[1,"3104567821"],[1,"6017458800"],[2,"3157789012"],[5,"3006671234"],[11,"3128890456"],[11,"6046712233"],[13,"3145523901"],[14,"3176634410"],[17,"3209987123"],[18,"3113345678"],[21,"3185567321"],[22,"3016678899"],[25,"3002233445"],[28,"3227788990"]].forEach(([i, t]) => put("TELEFONO_PERSONAL", {id_personal:i, telefono:t}));
+  ["Directora de operaciones","Administrador del sistema","Jefe de logística","Analista de información","Coordinadora general UNGRD","Jefe de talento humano","Auditora de inventarios","Administrador de bases de datos","Enlace de cooperación internacional","Jefe de comunicaciones"].forEach((c, i) => put("ADMINISTRADOR", {id_personal:i + 1, cargo:c}));
+  for (let i = 11; i <= 20; i++) put("COORDINADOR", {id_personal:i, fecha_asignacion: i <= 16 ? "2026-10-12T00:00" : "2026-10-13T00:00"});
+  [["Bomberos","Búsqueda y rescate en estructuras colapsadas"],["Cruz Roja","Atención prehospitalaria"],["Defensa Civil","Rescate acuático"],["Cruz Roja","Enfermería de emergencias"],["Bomberos","Materiales peligrosos"],["UNGRD","Evaluación de daños estructurales"],["Defensa Civil","Logística humanitaria"],["Bomberos","Rescate con cuerdas y alturas"],["Cruz Roja","Apoyo psicosocial"],["UNGRD","Telecomunicaciones de emergencia"]].forEach(([ins, es], i) => put("RESCATISTA", {id_personal:21 + i, institucion:ins, especialidad:es, disponibilidad:"Disponible"}));
+  [[1,"Albergue Coliseo Municipal de Quibdó","Albergue","Carrera 1 # 26-50, barrio Yesca Grande",30,"27001",11],[2,"Albergue Colegio Carrasquilla","Albergue","Calle 31 # 4-20, barrio Cristo Rey",20,"27001",12],[3,"Albergue Polideportivo de Istmina","Albergue","Calle 21 # 7-15, barrio Pueblo Nuevo",15,"27361",13],[4,"Albergue Coliseo El Cristal","Albergue","Avenida Simón Bolívar km 9, comuna 10",25,"76109",14],[5,"Albergue Escuela La Dulcera","Albergue","Calle 70 # 23-10, barrio Cuba",6,"66001",15],[6,"Albergue Salón Comunal La Patria","Albergue","Carrera 19 # 50-12, barrio La Patria",10,"63001",16],[7,"Centro de acopio Cruz Roja Cali","Centro de acopio","Carrera 38 # 5-91, barrio San Fernando",40,"76001",17],[8,"Centro de acopio UNGRD Quibdó","Centro de acopio","Calle 24 # 2-36, centro",20,"27001",18],[9,"Centro de acopio Bomberos Pereira","Centro de acopio","Avenida 30 de Agosto # 40-15",20,"66001",19],[10,"Centro de acopio Defensa Civil Manizales","Centro de acopio","Carrera 23 # 70-45, sector El Cable",15,"17001",20]
+  ].forEach(([id, n, t, d, c, m, co]) => put("SEDE", {id_sede:id, nombre:n, tipo:t, direccion:d, capacidad:c, id_municipio:m, id_coordinador:co}));
+  [[1,1],[2,1],[3,1],[4,2],[5,2],[6,3],[7,3],[8,4],[9,4],[10,5],[11,6]].forEach(([id, s]) => insFamilia({id_familia:id, estado:"Activa", id_sede:s}));
+  insFamilia({id_familia:12, estado:"Inactiva", id_sede:6});
+  const BEN = [["Jhon Fredy","Mosquera Palacios","14/03/1979","N","S",1],["Luz Dary","Mosquera Palacios","02/07/1982","S","N",1],["Brayan Stiven","Mosquera Palacios","21/05/2010","N","N",1],["Yuliana","Mosquera Palacios","03/11/2016","N","N",1],["Ana Lucía","Rentería Asprilla","30/01/1975","N","S",2],["Carlos Andrés","Rentería Asprilla","12/09/2004","N","N",2],["Eustaquia","Rentería Asprilla","10/02/1948","N","N",2],["Óscar","Valencia Córdoba","18/06/1990","S","S",3],["Daniela","Valencia Córdoba","08/08/2021","N","N",3],["Rosa Elvira","Palacios Murillo","04/04/1968","N","S",4],["Manuel","Palacios Murillo","10/10/1965","S","N",4],["Kevin","Palacios Murillo","01/12/2008","N","N",4],["Sara","Palacios Murillo","15/03/2012","N","N",4],["Tomás","Palacios Murillo","22/06/1944","N","N",4],["Wilmar","Hinestroza Perea","27/02/1985","N","S",5],["Yenny","Hinestroza Perea","09/09/1987","N","N",5],["Samuel","Hinestroza Perea","19/01/2019","N","N",5],["Leidy Johana","Cuesta Moreno","12/12/1992","N","S",6],["Andrés Felipe","Cuesta Moreno","03/03/1990","N","N",6],["Mariana","Cuesta Moreno","07/07/2015","N","N",6],["Emmanuel","Cuesta Moreno","14/02/2023","N","N",6],["Gustavo","Lloreda Mena","30/08/1958","S","S",7],["Carmen","Lloreda Mena","05/05/1960","N","N",7],["Nelson","Angulo Riascos","11/11/1983","N","S",8],["Paola","Angulo Riascos","20/04/1986","N","N",8],["Jhonier","Angulo Riascos","10/10/2011","N","N",8],["Marleny","Cortés Valencia","17/07/1972","N","S",9],["Luis Miguel","Cortés Valencia","25/01/1999","N","N",9],["Valentina","Cortés Valencia","06/06/2007","S","N",9],["Isaac","Cortés Valencia","29/09/2014","N","N",9],["Jorge Iván","Gómez Restrepo","15/05/1970","N","S",10],["Gloria","Gómez Restrepo","20/08/1973","N","N",10],["Santiago","Gómez Restrepo","02/02/2002","N","N",10],["Camila","Gómez Restrepo","30/11/2005","N","N",10],["Martina","Gómez Restrepo","12/04/2018","N","N",10],["Rubén","Gómez Restrepo","24/12/1941","S","N",10],["Diana Marcela","Ospina Londoño","01/10/1988","N","S",11],["Julián","Ospina Londoño","14/01/1986","N","N",11],["Sofía","Ospina Londoño","05/05/2013","N","N",11],["Matías","Ospina Londoño","18/08/2017","N","N",11],["Inés","Ospina Londoño","03/03/1950","N","N",11],["Héctor","Arango Quintero","09/09/1964","N","S",12],["Beatriz","Arango Quintero","11/11/1966","N","N",12],["Felipe","Arango Quintero","06/06/1995","N","N",12]];
+  BEN.forEach(([n, a, f, l, j, fam], i) => { const doc = String(1077407919 + 7919 * i); insBenef({id_beneficiario:i + 1, documento:doc, nombres:n, apellidos:a, fecha_nacimiento:D(f), lesionado:l, jefe_hogar:j, contrasena: j === "S" ? sha256(`${doc}:QR-${doc}`) : null, id_familia:fam}); });
+  [[1,"Arroz","Arroz blanco en bolsa de 1 kg","Kilo","S",2.5],[2,"Agua potable","Agua tratada en bolsa o botella","Litro","S",21],[3,"Fríjol","Fríjol rojo seco","Kilo","S",1],[4,"Leche en polvo","Leche entera en polvo","Kilo","S",0.5],[5,"Atún en lata","Lata de atún de 170 g","Unidad","S",3],[6,"Acetaminofén 500 mg","Medicamento: caja por 10 tabletas","Caja","S",1],[7,"Sales de rehidratación oral","Medicamento: sobre para un litro","Unidad","S",3],[8,"Kit de aseo personal","Jabón, crema dental, cepillo y toallas","Unidad","N",1],[9,"Cobija térmica","Cobija térmica individual","Unidad","N",1],[10,"Pala de rescate","Herramienta de rescate; no se entrega a familias","Unidad","N",0]
+  ].forEach(([id, n, d, u, p, m]) => put("INSUMO", {id_insumo:id, nombre:n, descripcion:d, unidad:u, perecedero:p, maximo_semanal:m}));
+  [[1,"Donación","13/10/2026","30/03/2027",800,1,8],[2,"Compra pública","14/10/2026","15/01/2027",500,1,8],[3,"Cooperación internacional","13/10/2026","13/10/2027",3000,2,8],[4,"Donación","15/10/2026","20/11/2026",60,6,8],[5,"Cooperación internacional","14/10/2026",null,200,8,8],[6,"Donación","13/10/2026","01/02/2027",1000,1,7],[7,"Compra pública","13/10/2026","10/04/2027",4000,2,7],[8,"Donación","16/10/2026","01/01/2028",900,5,7],[9,"Cooperación internacional","15/10/2026","25/11/2026",300,7,7],[10,"Donación","14/10/2026",null,150,9,9],[11,"Compra pública","15/10/2026","01/12/2026",120,4,9],[12,"Compra pública","13/10/2026",null,40,10,10],[13,"Donación","14/10/2026","01/05/2027",400,3,9],[14,"Donación","14/10/2026","20/02/2027",450,1,9]
+  ].forEach(([id, o, r, v, c, i, s]) => insLote({id_lote:id, origen:o, fecha_recepcion:D(r), fecha_vencimiento:D(v), cant_recibida:c, id_insumo:i, id_sede:s}));
+  [[1,"15/10/2026 07:00","Urgente","Atendida",11,"27001"],[2,"15/10/2026 09:30","Alta","Atendida",13,"27361"],[3,"16/10/2026 08:00","Urgente","Atendida",14,"76109"],[4,"16/10/2026 10:00","Alta","Atendida",15,"66001"],[5,"17/10/2026 11:00","Media","Despachada",16,"63001"],[6,"17/10/2026 06:30","Urgente","Atendida",21,"27001"],[7,"18/10/2026 14:00","Alta","Atendida",12,"27001"],[8,"19/10/2026 09:00","Media","Despachada",27,"66001"],[9,"20/10/2026 07:45","Urgente","Atendida",14,"76109"],[10,"22/10/2026 08:30","Baja","Despachada",26,"76834"]
+  ].forEach(([id, f, p, e, pe, m]) => insSolicitud({id_solicitud:id, fecha:D(f), prioridad:p, estado:e, id_personal:pe, id_municipio:m}));
+  [[1,1,600,600],[1,2,1500,1500],[2,1,400,400],[2,6,30,30],[3,2,2000,2000],[3,5,500,500],[4,9,60,60],[4,4,40,40],[5,3,100,100],[5,1,150,150],[6,10,10,10],[6,7,100,100],[7,8,80,80],[8,10,8,8],[9,7,150,150],[10,9,30,30]
+  ].forEach(([s, i, r, a]) => insSolInsumo({id_solicitud:s, id_insumo:i, cantidad_requerida:r, cantidad_asignada:a}));
+  [[1,"16/10/2026 07:30","TKX482","Hugo Armando Lemos","Entregado","16/10/2026 17:45",1],[2,"16/10/2026 09:00","SNP219","Dairo Mena Cuesta","Entregado","16/10/2026 15:10",2],[3,"17/10/2026 06:00","VCL735","Orlando Banguera Sinisterra","Entregado","17/10/2026 13:20",3],[4,"17/10/2026 08:00","WFM106","Ricardo Ossa Montoya","Entregado","17/10/2026 10:30",4],[5,"18/10/2026 07:00","XKT904","Fernando Grajales Ruiz","En tránsito",null,5],[6,"18/10/2026 05:30","MZE318","Jorge Eliécer Toro","Entregado","18/10/2026 19:40",6],[7,"18/10/2026 06:15","BOG551","Yeison Andrés Caicedo","Entregado","18/10/2026 20:05",6],[8,"19/10/2026 08:00","TKX482","Hugo Armando Lemos","Entregado","19/10/2026 09:15",7],[9,"20/10/2026 10:00","MZE318","Jorge Eliécer Toro","En tránsito",null,8],[10,"21/10/2026 06:00","VCL735","Orlando Banguera Sinisterra","Cancelado",null,9],[11,"22/10/2026 06:00","KJD640","Wilmer Sinisterra Angulo","Entregado","22/10/2026 14:00",9],[12,"23/10/2026 07:30","WFM106","Ricardo Ossa Montoya","En tránsito",null,10]
+  ].forEach(([id, f, p, c, e, r, s]) => insDespacho({id_despacho:id, fecha:D(f), placa:p, conductor:c, estado:e, fecha_recibido:D(r), id_solicitud:s}));
+  [[1,2,500],[1,1,100],[1,3,1500],[2,1,400],[2,4,30],[3,7,2000],[3,8,500],[4,10,60],[4,11,40],[5,13,100],[5,14,150],[6,12,10],[7,9,100],[8,5,80],[9,12,8],[11,9,150],[12,10,30]].forEach(([d, l, c]) => insDespachoLote({id_despacho:d, id_lote:l, cantidad:c}));
+  [[11,"28/10/2026 08:00","Alta",11,"27001"],[12,"28/10/2026 10:00","Alta",13,"27361"],[13,"29/10/2026 07:00","Urgente",14,"76109"]].forEach(([id, f, p, pe, m]) => insSolicitud({id_solicitud:id, fecha:D(f), prioridad:p, estado:"Pendiente", id_personal:pe, id_municipio:m}));
+  [[11,900],[12,700],[13,800]].forEach(([s, r]) => insSolInsumo({id_solicitud:s, id_insumo:1, cantidad_requerida:r, cantidad_asignada:null}));
+  const R = pReparto(1, 1, D("28/10/2026"));
+  S.reparto = {desde:D("28/10/2026"), disponible:R.disponible, demanda:R.demanda, totalHab:R.totalHab, filas:R.res.map(x => ({id_solicitud:x.s.id_solicitud, id_municipio:x.s.id_municipio, hab:x.hab, pedido:x.si.cantidad_requerida, asignado:x.asignado}))};
+  insDespacho({id_despacho:13, fecha:D("30/10/2026 08:00"), placa:"KJD640", conductor:"Wilmer Sinisterra Angulo", estado:"En tránsito", fecha_recibido:null, id_solicitud:13});
+  insDespachoLote({id_despacho:13, id_lote:6, cantidad:600});
+  find("SOLICITUD", s => s.id_solicitud === 13).estado = "Despachada";
+  [[1,1,"17/10/2026 10:00",8],[1,2,"17/10/2026 10:00",60],[2,1,"17/10/2026 10:30",7.5],[2,2,"17/10/2026 10:30",45],[3,1,"17/10/2026 11:00",5],[6,1,"17/10/2026 15:00",10],[6,6,"17/10/2026 15:00",2],[7,6,"17/10/2026 15:30",1],[8,2,"18/10/2026 08:00",63],[8,5,"18/10/2026 08:00",9],[9,2,"18/10/2026 08:30",80],[10,9,"18/10/2026 09:00",6],[10,4,"18/10/2026 09:00",3],[4,8,"20/10/2026 09:00",5],[4,1,"20/10/2026 09:00",12.5],[5,8,"20/10/2026 09:30",3],[9,7,"22/10/2026 16:00",4],[1,1,"24/10/2026 10:00",10]
+  ].forEach(([f, i, d, c]) => insEntrega({id_familia:f, id_insumo:i, fecha:D(d), cantidad:c}));
+  [[1,"Cuadrilla Alfa USAR","12/10/2026 08:00","19/10/2026 08:00","27001"],[2,"Cuadrilla Bravo","12/10/2026 10:00","19/10/2026 08:00","76109"],[3,"Cuadrilla Cóndor","13/10/2026 07:00","20/10/2026 08:00","66001"],[4,"Cuadrilla Delta","13/10/2026 09:00","18/10/2026 18:00","63001"],[5,"Cuadrilla Eco","14/10/2026 06:00","21/10/2026 06:00","27361"],[6,"Cuadrilla Fénix","19/10/2026 08:00","26/10/2026 08:00","27001"],[7,"Cuadrilla Guardián","20/10/2026 08:00","27/10/2026 08:00","76834"],[8,"Cuadrilla Halcón","21/10/2026 07:00","28/10/2026 07:00","17001"],[9,"Cuadrilla Ícaro","22/10/2026 07:00","29/10/2026 07:00","76001"],[10,"Cuadrilla Jaguar","27/10/2026 08:00","05/11/2026 08:00","76109"]
+  ].forEach(([id, n, a, b, m]) => put("CUADRILLA", {id_cuadrilla:id, nombre:n, fecha_inicio:D(a), fecha_fin:D(b), id_municipio:m}));
+  [[1,21],[1,22],[1,23],[2,24],[2,25],[3,26],[3,27],[4,28],[5,29],[5,30],[6,21],[6,24],[7,26],[7,22],[8,28],[8,27],[9,29],[9,25],[10,23],[10,30],[10,21]].forEach(([c, p]) => insCuadResc({id_cuadrilla:c, id_personal:p}));
+  [21, 23, 30].forEach(id => find("RESCATISTA", r => r.id_personal === id).disponibilidad = "Asignado");
+  find("RESCATISTA", r => r.id_personal === 28).disponibilidad = "Inactivo";
+  S.clock = "2026-10-30T11:00";
+  S.log.unshift({t:S.clock, sql:"@1_SCRIPT_CREACION.sql\n@2_SCRIPT_DATOS.sql   -- cada fila pasó por los mismos triggers", ok:true, err:"", src:""});
+}
+
+/* ================= Consultas de dominio ================= */
+const sede = id => find("SEDE", s => s.id_sede === id);
+const muni = id => find("MUNICIPIO", m => m.id_municipio === id);
+const ins = id => find("INSUMO", i => i.id_insumo === id);
+const per = id => find("PERSONAL", p => p.id_personal === id);
+const fam = id => find("FAMILIA", f => f.id_familia === id);
+const miembros = fid => filt("BENEFICIARIO", b => b.id_familia === fid);
+const jefe = fid => find("BENEFICIARIO", b => b.id_familia === fid && b.jefe_hogar === "S");
+const nombreP = p => `${p.nombres} ${p.apellidos}`;
+const U = {Kilo:"kg", Litro:"L", Caja:"cajas", Unidad:"und"};
+const uni = iid => U[ins(iid).unidad];
+const q = (n, iid) => `${fmt(n)} ${uni(iid)}`;
+const nextId = (t, k) => DB[t].reduce((m, r) => Math.max(m, Number(r[k]) || 0), 0) + 1;
+const diasHasta = s => Math.round((M(s) - M(HOY + "T00:00")) / 1440);
+
+/* ================= Perfiles y navegación ================= */
+const ROLES = {
+  coord:{chip:"Coordinador de albergue", id:11, tabs:[["c-home","Inicio","home"],["c-scan","Escanear","qr"],["c-censo","Censo","plus"],["c-sols","Solicitudes","list"]]},
+  acopio:{chip:"Centro de acopio", id:18, tabs:[["a-home","Inicio","home"],["a-lotes","Lotes","box"],["a-desp","Despachos","truck"],["a-sols","Solicitudes","list"]]},
+  admin:{chip:"Administrador", id:1, tabs:[["ad-home","Inicio","home"],["ad-reparto","Reparto","scale"],["ad-des","Desastres","alert"],["ad-per","Personal","users"]]},
+  resc:{chip:"Rescatista", id:21, tabs:[["r-home","Inicio","home"],["r-cuad","Cuadrilla","target"],["r-sols","Solicitudes","list"],["r-perfil","Perfil","user"]]},
+  jefe:{chip:"Jefe de hogar", id:null, tabs:[["j-home","Inicio","home"],["j-qr","Mi QR","qr"],["j-ayudas","Ayudas","list"],["j-perfil","Perfil","user"]]}
+};
+let UI = {role:null, uid:null, fid:null, screen:"login", stack:[], params:{}, ptab:"pantalla", ptable:"LOTE", panelOpen:false, login:{mode:"personal", chip:"coord", jdoc:"1077407919"}, flash:null, form:{}};
+const ICON = {
+  home:'<path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v11h13V9"/><path d="M10 20v-5h4v5"/>',
+  qr:'<rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="1"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="1"/><path d="M14 14h2.5v2.5H14zM18.5 18.5h2v2h-2zM14 19h2M19 14v2.5"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  list:'<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+  box:'<path d="M20.5 7.5 12 3 3.5 7.5v9L12 21l8.5-4.5v-9z"/><path d="m3.5 7.5 8.5 4.5 8.5-4.5M12 12v9"/>',
+  truck:'<path d="M2.5 6.5h11v9.5h-11zM13.5 9.5H17l3.5 3.5v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/>',
+  scale:'<path d="M12 3.5v17M7 20.5h10M5 7h14"/><path d="m5 7-2.8 6.5a2.8 2.8 0 0 0 5.6 0L5 7zM19 7l-2.8 6.5a2.8 2.8 0 0 0 5.6 0L19 7z"/>',
+  alert:'<path d="M12 4 2.8 19.5h18.4L12 4z"/><path d="M12 10v4.5M12 17.3v.2"/>',
+  users:'<circle cx="9" cy="8" r="3.3"/><path d="M3 19.5c.8-3.4 3.2-5.2 6-5.2s5.2 1.8 6 5.2"/><path d="M16 4.8a3.3 3.3 0 0 1 0 6.4M18 14.6c1.6.8 2.7 2.4 3.1 4.9"/>',
+  user:'<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1-3.8 4-5.8 7.5-5.8s6.5 2 7.5 5.8"/>',
+  target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/>',
+  back:'<path d="m14.5 5-7 7 7 7"/>',
+  logout:'<path d="M14.5 4.5h3a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h9.5"/>',
+  db:'<ellipse cx="12" cy="5.5" rx="7.5" ry="2.8"/><path d="M4.5 5.5v6.5c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8V5.5M4.5 12v6.5c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8V12"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  reset:'<path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5"/><path d="M4 4v4.5h4.5"/>'
+};
+const ic = (n, s = 20) => `<svg class="i" style="width:${s}px;height:${s}px" viewBox="0 0 24 24" aria-hidden="true">${ICON[n] || ""}</svg>`;
+// Logo: tres barras con la proporción del reparto 760 : 600 : 240
+const LOGO = (h = 36, first = "#FFFFFF") => `<svg viewBox="0 0 54 40" style="height:${h}px;width:auto;flex:none" aria-hidden="true"><rect x="2" y="2" width="13" height="36" rx="6.5" fill="${first}"/><rect x="20.5" y="9.6" width="13" height="28.4" rx="6.5" fill="#2F6BFF"/><rect x="39" y="26.6" width="13" height="11.4" rx="5.7" fill="#17C08E"/></svg>`;
+
+function user(){ return UI.uid ? per(UI.uid) : null; }
+function go(screen, params = {}, push = true){ if (push && UI.screen !== screen) UI.stack.push({screen:UI.screen, params:UI.params}); UI.screen = screen; UI.params = params; UI.flash = null; render(); const s = $(".scr"); if (s) s.scrollTop = 0; }
+function tab(screen){ UI.stack = []; UI.screen = screen; UI.params = {}; UI.flash = null; render(); const s = $(".scr"); if (s) s.scrollTop = 0; }
+function back(){ const p = UI.stack.pop(); if (p){ UI.screen = p.screen; UI.params = p.params; } else UI.screen = ROLES[UI.role].tabs[0][0]; UI.flash = null; render(); }
+function login(role, opts = {}){
+  UI.role = role; UI.stack = []; UI.params = {}; UI.flash = null; UI.form = {};
+  if (role === "jefe"){ UI.fid = opts.fid; UI.uid = null; } else { UI.uid = ROLES[role].id; UI.fid = null; }
+  UI.screen = ROLES[role].tabs[0][0]; save(); render();
+}
+function logout(){ UI.role = null; UI.uid = null; UI.fid = null; UI.screen = "login"; UI.stack = []; UI.flash = null; save(); render(); }
+
+/* ================= Persistencia (solo en este navegador) ================= */
+const KEY = "manoamiga-oracle-v4";
+function save(){ try { localStorage.setItem(KEY, JSON.stringify({DB, S, ui:{role:UI.role, uid:UI.uid, fid:UI.fid}})); } catch(e){} }
+function sesionValida(){ if (UI.role === "jefe" && !fam(UI.fid)){ UI.role = null; UI.fid = null; UI.screen = "login"; UI.stack = []; } }
+function load(){
+  try { const o = JSON.parse(localStorage.getItem(KEY) || "null"); if (o && o.S && o.S.v === 4 && o.DB){ DB = o.DB; S = o.S; if (o.ui && o.ui.role && ROLES[o.ui.role]){ UI.role = o.ui.role; UI.uid = o.ui.uid; UI.fid = o.ui.fid; UI.screen = ROLES[UI.role].tabs[0][0]; } if (!DB.FAMILIA) throw 0; sesionValida(); return; } } catch(e){ UI.role = null; UI.screen = "login"; }
+  seed();
+}
+
+/* ================= Piezas visuales ================= */
+const tag = (t, tone) => `<span class="tag t-${tone}">${esc(t)}</span>`;
+const aviso = (tone, title, body, ora) => `<div class="aviso av-${tone}" role="status"><b class="t">${esc(title)}</b>${body}${ora ? `<span class="ora">${esc(ora)}</span>` : ""}</div>`;
+const oraLine = e => `${e.code} · ${e.src}`;
+const bar = (pct, color) => `<div class="bar"><i style="width:${Math.max(0, Math.min(100, pct))}%;background:${color || "var(--blue)"}"></i></div>`;
+const SOL_T = {Pendiente:"orange", Asignada:"blue", Despachada:"blue", Atendida:"green", Cancelada:"gray"};
+const DSP_T = {Pendiente:"orange", "En tránsito":"blue", Entregado:"green", Cancelado:"gray"};
+const NIV_T = {"Crítico":"red", Alto:"orange", Medio:"blue", Bajo:"gray"};
+function header(eyebrow, title, sub){
+  const canBack = UI.stack.length > 0;
+  return `<div class="hdr"><div class="hrow">${canBack ? `<button class="hbtn" data-a="back" aria-label="Volver">${ic("back", 22)}</button>` : "<span></span>"}<button class="hbtn" data-a="logout" aria-label="Salir">${ic("logout", 20)}</button></div>
+  <div class="eyebrow">${esc(eyebrow)}</div><h1>${esc(title)}</h1>${sub ? `<p>${esc(sub)}</p>` : ""}</div>`;
+}
+function qrHTML(fid, px, plain){ return `<div class="qrbox" ${plain ? 'style="border:0;padding:0"' : ""}><div class="qrt" data-qr="${fid}" data-px="${px}" style="width:${px}px;height:${px}px" role="img" aria-label="Código QR de la familia ${fid}"></div></div>`; }
+function drawQR(el){
+  const px = Number(el.dataset.px), text = String(el.dataset.qr);
+  el.innerHTML = "";
+  try { if (window.QRCode){ new QRCode(el, {text, width:px, height:px, colorDark:"#0E1A2F", colorLight:"#FFFFFF", correctLevel:QRCode.CorrectLevel.M}); return; } } catch(e){ el.innerHTML = ""; }
+  // Respaldo sin librería: cuadrícula 25 × 25 con los tres buscadores
+  const N = 25, z = px / N, cv = document.createElement("canvas"); cv.width = px; cv.height = px; const g = cv.getContext("2d");
+  let h = 2166136261; for (const ch of text) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+  g.fillStyle = "#fff"; g.fillRect(0, 0, px, px); g.fillStyle = "#0E1A2F";
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++){ h = Math.imul(h ^ (x * 31 + y), 16777619) >>> 0; const fz = (x < 8 && y < 8) || (x > N - 9 && y < 8) || (x < 8 && y > N - 9); if (!fz && (h & 1)) g.fillRect(x * z, y * z, z, z); }
+  [[0, 0], [N - 7, 0], [0, N - 7]].forEach(([x, y]) => { g.fillStyle = "#0E1A2F"; g.fillRect(x * z, y * z, 7 * z, 7 * z); g.fillStyle = "#fff"; g.fillRect((x + 1) * z, (y + 1) * z, 5 * z, 5 * z); g.fillStyle = "#0E1A2F"; g.fillRect((x + 2) * z, (y + 2) * z, 3 * z, 3 * z); });
+  el.appendChild(cv);
+}
+
+/* ================= Pantallas ================= */
+const V = {};
+V.login = () => {
+  const L = UI.login; const p = per(ROLES[L.chip].id);
+  return `<div class="login">
+    <div>${LOGO(40)}</div>
+    <div><h1>ManoAmiga</h1><p class="lead" style="margin-top:8px">Ayuda humanitaria trazable para la emergencia por el terremoto de 7,4</p></div>
+    <div class="seg" role="tablist"><button class="${L.mode === "personal" ? "on" : ""}" data-a="lmode" data-v="personal" role="tab" aria-selected="${L.mode === "personal"}">Personal</button><button class="${L.mode === "jefe" ? "on" : ""}" data-a="lmode" data-v="jefe" role="tab" aria-selected="${L.mode === "jefe"}">Jefe de hogar</button></div>
+    ${L.mode === "personal" ? `
+      <div><div style="font-size:12.5px;color:var(--gray-light);font-weight:600;margin-bottom:8px">Entrar como</div>
+      <div class="lchips">${["coord","acopio","admin","resc"].map(k => `<button class="${L.chip === k ? "on" : ""}" data-a="lchip" data-v="${k}">${ROLES[k].chip}</button>`).join("")}</div></div>
+      <div class="lfld"><label for="l-mail">Correo</label><input id="l-mail" value="${esc(p.correo)}" readonly></div>
+      <div class="lfld"><label for="l-pass">Contraseña</label><input id="l-pass" type="password" value="demostracion" readonly></div>
+      <button class="btn" data-a="dologin">Ingresar</button>` : `
+      <div class="lfld"><label for="l-doc">Documento del jefe de hogar</label><input id="l-doc" inputmode="numeric" value="${esc(L.jdoc)}" data-k="jdoc"></div>
+      <div style="font-size:12px;color:var(--gray-light)">Documentos de prueba: 1077407919 (familia 1), 1077439595 (familia 2), 1077463352 (familia 3).</div>
+      ${UI.flash || ""}
+      <button class="btn" data-a="dologin">Ingresar</button>`}
+    <p class="lnote">La contraseña se guarda cifrada (SHA-256).<br>El jefe de hogar ingresa con su documento.<br><span>Simulación de apoyo: lo implementado y evaluado es la base de datos en Oracle.</span></p>
+  </div>`;
+};
+
+/* ---------- Coordinador de albergue ---------- */
+const mySede = () => find("SEDE", s => s.id_coordinador === UI.uid);
+V["c-home"] = () => {
+  const p = user(), s = mySede(); const occ = personasActivas(s.id_sede); const pct = Math.round(occ / s.capacidad * 1000) / 10;
+  const fams = filt("FAMILIA", f => f.id_sede === s.id_sede && f.estado === "Activa").length;
+  const ents = filt("ENTREGA", e => fam(e.id_familia).id_sede === s.id_sede).slice().sort((a, b) => b.fecha.slice(0, 10).localeCompare(a.fecha.slice(0, 10)) || a.id_familia - b.id_familia || a.id_insumo - b.id_insumo).slice(0, 4);
+  return header("Coordinadora · Albergue", `Hola, ${p.nombres}`, `${s.nombre} · ${muni(s.id_municipio).nombre}`) + `<div class="scr">
+    <div class="card"><div class="split"><span class="sec">Ocupación</span>${pct >= 100 ? tag("Lleno", "red") : pct >= 90 ? tag("Casi lleno", "orange") : tag("Con cupo", "green")}</div>
+      <div class="split" style="margin:10px 0 12px;align-items:flex-end"><div class="big">${occ} <small>/ ${s.capacidad} personas</small></div><span class="muted num">${fmt(pct)} %</span></div>
+      ${bar(pct, pct >= 100 ? "var(--red)" : "var(--blue)")}<p class="muted" style="margin-top:10px">${fams} familias activas</p></div>
+    <div class="tiles">
+      <button class="tile" data-a="go" data-v="c-scan"><span class="ic blue">${ic("qr")}</span><b>Escanear QR</b><span>Entregar ayuda</span></button>
+      <button class="tile" data-a="go" data-v="c-censo"><span class="ic green">${ic("plus")}</span><b>Registrar familia</b><span>Censo</span></button>
+      <button class="tile" data-a="go" data-v="c-sol"><span class="ic orange">${ic("list")}</span><b>Nueva solicitud</b><span>Pedir insumos</span></button>
+      <button class="tile" data-a="go" data-v="c-alertas"><span class="ic red">${ic("alert")}</span><b>Alertas</b><span>Cupos y vencimientos</span></button>
+    </div>
+    <div class="card"><div class="sec">Últimas entregas</div>${ents.map(e => `<div class="li"><span><b>Familia ${e.id_familia}</b> · ${esc(ins(e.id_insumo).nombre)}</span><span class="r">${q(e.cantidad, e.id_insumo)} · ${dm(e.fecha)}</span></div>`).join("") || `<p class="muted" style="margin-top:8px">Sin entregas.</p>`}</div>
+  </div>`;
+};
+V["c-scan"] = () => {
+  const s = mySede(); const fams = filt("FAMILIA", f => f.id_sede === s.id_sede).map(f => f.id_familia).filter(x => x !== 1);
+  return header("Entregar ayuda", "Escanear carné familiar", "Apunte la cámara al código QR del carné") + `<div class="scr">
+    <div class="scan"><div class="frame">${qrHTML(1, 170, true)}<span class="line"></span></div></div>
+    <p class="muted sm">Simulación: la lectura con la cámara es parte del desarrollo futuro.</p>
+    <button class="btn" data-a="leer" data-v="1">Leer carné · Familia N.º 1</button>
+    <div class="btn-row">${fams.slice(0, 2).map(x => `<button class="btn sec2" data-a="leer" data-v="${x}">Familia ${x}</button>`).join("")}</div>
+    <div class="card"><div class="sec">Digitar el código del carné</div><div class="split" style="margin-top:10px;gap:8px"><div class="fld" style="flex:1"><label for="scan-cod">Código (id_familia)</label><input id="scan-cod" inputmode="numeric" placeholder="Ej. 12" value="${esc(UI.params.cod || "")}"></div><button class="btn" style="width:auto;padding:0 18px" data-a="leer-cod">Buscar</button></div>
+      <p class="muted sm" style="margin-top:8px">Pruebe el 12: es una familia inactiva.</p></div>
+    ${UI.flash || ""}
+  </div>`;
+};
+V["c-entrega"] = () => {
+  const fid = UI.params.fid; const f = fam(fid); const j = jefe(fid); const n = integrantes(fid);
+  const iid = UI.params.iid || 1; const I = ins(iid);
+  const rec = recibido7(fid, iid, S.clock); const max = I.maximo_semanal * n;
+  const pct = max ? rec / max * 100 : 100; const full = rec >= max;
+  const ult = filt("ENTREGA", e => e.id_familia === fid && e.id_insumo === iid).sort((a, b) => M(b.fecha) - M(a.fecha))[0];
+  return header("Entregar ayuda", `Familia N.º ${fid}`, sede(f.id_sede).nombre) + `<div class="scr">
+    <div class="card" style="display:flex;gap:14px;align-items:center">${qrHTML(fid, 76)}<div style="min-width:0"><div class="sec">QR leído · código ${fid}</div><div style="font-size:17px;font-weight:700;line-height:1.25;margin-top:2px">${esc(j ? nombreP(j) : "—")}</div><div class="muted sm">Jefe de hogar · ${n} integrantes</div><div style="margin-top:6px">${f.estado === "Activa" ? tag("Activa", "green") : tag("Inactiva", "gray")}</div></div></div>
+    <div class="pills" role="radiogroup" aria-label="Insumo">${[1, 2, 3, 8].map(i => `<button class="pill ${iid === i ? "on" : ""}" data-a="ent-ins" data-v="${i}" role="radio" aria-checked="${iid === i}">${esc(ins(i).nombre)}</button>`).join("")}</div>
+    <div class="card"><div class="split"><span class="sec">Cupo semanal de ${esc(I.nombre.toLowerCase())}</span><span class="muted num">${fmt(I.maximo_semanal)} ${uni(iid)} × ${n}</span></div>
+      <div class="big" style="margin:10px 0 12px">${fmt(rec)} <small>/ ${fmt(max)} ${uni(iid)} usados</small></div>
+      ${bar(pct, full ? "var(--red)" : "var(--green)")}
+      <p class="muted sm" style="margin-top:10px">Se cuentan las entregas de los últimos 7 días.${ult ? ` Última: ${dmyhm(ult.fecha)} · ${q(ult.cantidad, iid)}.` : ""}</p></div>
+    <div class="fld" id="f-cant"><label for="ent-cant">Cantidad (${uni(iid)})</label><input id="ent-cant" inputmode="decimal" value="${esc(UI.params.cant ?? (full ? 5 : fmt(max - rec)))}"></div>
+    ${UI.flash || ""}
+    <button class="btn" data-a="entregar">Registrar entrega</button>
+  </div>`;
+};
+function proxCupo(fid, iid, qty){
+  const max = ins(iid).maximo_semanal * integrantes(fid);
+  if (qty > max) return null;
+  const t = M(S.clock);
+  const cands = filt("ENTREGA", e => e.id_familia === fid && e.id_insumo === iid && M(e.fecha) > t - 7 * 1440).map(e => M(e.fecha) + 7 * 1440).sort((a, b) => a - b);
+  for (const c of cands){ const s = filt("ENTREGA", e => e.id_familia === fid && e.id_insumo === iid && M(e.fecha) > c - 7 * 1440 && M(e.fecha) <= c).reduce((a, e) => a + e.cantidad, 0); if (s + qty <= max) return fromM(c); }
+  return null;
+}
+V["c-censo"] = () => {
+  const s = mySede(); const occ = personasActivas(s.id_sede);
+  if (UI.params.done){ const d = UI.params.done; return header("Censo", `Familia N.º ${d}`, "Carné listo para imprimir") + `<div class="scr">
+    <div class="card" style="display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">${qrHTML(d, 220)}<div style="font-size:22px;font-weight:800">Familia N.º ${d}</div><p class="muted">Carné listo para imprimir. El QR contiene el código ${d}, el mismo id_familia de la base de datos.</p></div>
+    ${aviso("green", "Familia registrada", `<span>${miembros(d).length} integrantes en ${esc(s.nombre)}. Ocupación: ${personasActivas(s.id_sede)} de ${s.capacidad}.</span>`, "INSERT FAMILIA y BENEFICIARIO · T_FAMILIA_VALIDAR y T_BENEFICIARIO_VALIDAR")}
+    <button class="btn sec2" data-a="censo-new">Registrar otra familia</button></div>`; }
+  const F = UI.form.censo || (UI.form.censo = {rows:[{nombres:"María Fernanda", apellidos:"Palacios Mena", documento:"1077512345", nac:"1987-05-14", lesionado:false}]});
+  return header("Censo", "Registrar familia", s.nombre) + `<div class="scr">
+    <div class="sec">Integrantes</div>
+    ${F.rows.map((r, k) => `<div class="mrow">
+      <div class="full split"><b style="font-size:14px">${k === 0 ? "Jefe de hogar" : "Integrante " + (k + 1)}</b>${k > 0 ? `<button class="hbtn" style="color:var(--gray);width:28px;height:28px" data-a="censo-rm" data-v="${k}" aria-label="Quitar integrante ${k + 1}">${ic("x", 16)}</button>` : ""}</div>
+      <label>Nombres<input data-cf="${k}:nombres" value="${esc(r.nombres)}"></label>
+      <label>Apellidos<input data-cf="${k}:apellidos" value="${esc(r.apellidos)}"></label>
+      <label>Documento<input data-cf="${k}:documento" inputmode="numeric" value="${esc(r.documento)}"></label>
+      <label>Nacimiento<input type="date" data-cf="${k}:nac" value="${esc(r.nac)}"></label>
+      <label class="chk full"><input type="checkbox" data-cf="${k}:lesionado" ${r.lesionado ? "checked" : ""}>Lesionado</label></div>`).join("")}
+    <button class="btn sec2" data-a="censo-add">${ic("plus", 18)} Agregar</button>
+    <div class="card split"><span class="muted">Capacidad del albergue</span><b class="num">${occ} de ${s.capacidad} personas</b></div>
+    ${UI.flash || ""}
+    <button class="btn" data-a="censo-save">Guardar y generar carné QR</button>
+  </div>`;
+};
+function solForm(mid){
+  const F = UI.form.sol || (UI.form.sol = {iid:1, cant:"200", prio:"Alta", mid});
+  const munis = filt("AFECTACION", a => a.id_desastre === 1).map(a => muni(a.id_municipio));
+  return `<div class="fld"><label for="sol-mun">Municipio</label><select id="sol-mun" data-k="sol-mid">${munis.map(m => `<option value="${m.id_municipio}" ${m.id_municipio === F.mid ? "selected" : ""}>${esc(m.nombre)}</option>`).join("")}</select></div>
+    <div class="sec">Insumo</div>
+    <div class="pills">${[1, 2, 3, 6, 7, 8].map(i => `<button class="pill ${F.iid === i ? "on" : ""}" data-a="sol-ins" data-v="${i}">${esc(ins(i).nombre)}</button>`).join("")}</div>
+    <div class="fld" id="f-solcant"><label for="sol-cant">Cantidad (${uni(F.iid)})</label><input id="sol-cant" inputmode="decimal" data-k="sol-cant" value="${esc(F.cant)}"></div>
+    <div class="sec">Prioridad</div>
+    <div class="pills">${["Baja","Media","Alta","Urgente"].map(p => `<button class="pill ${F.prio === p ? "on" : ""}" data-a="sol-prio" data-v="${p}">${p}</button>`).join("")}</div>
+    ${UI.flash || ""}
+    <button class="btn" data-a="sol-send">Enviar solicitud</button>`;
+}
+V["c-sol"] = () => header("Coordinadora · Solicitud", "Nueva solicitud", `La realiza ${nombreP(user())}`) + `<div class="scr">${solForm(mySede().id_municipio)}</div>`;
+V["c-sols"] = () => solList("Coordinadora · Solicitudes", "c-sol");
+function solList(eyebrow, nueva){
+  const mine = filt("SOLICITUD", s => s.id_personal === UI.uid).sort((a, b) => b.id_solicitud - a.id_solicitud);
+  return header(eyebrow, "Mis solicitudes", "Relación Realiza: cada solicitud la hace una sola persona") + `<div class="scr">
+    <button class="btn" data-a="go" data-v="${nueva}">${ic("plus", 18)} Nueva solicitud</button>
+    ${mine.map(s => { const items = filt("SOLICITUD_INSUMO", x => x.id_solicitud === s.id_solicitud); return `<div class="card"><div class="split"><b>Solicitud N.º ${s.id_solicitud}</b>${tag(s.estado, SOL_T[s.estado])}</div><p class="muted sm" style="margin-top:2px">${esc(muni(s.id_municipio).nombre)} · ${dmyhm(s.fecha)} · prioridad ${s.prioridad}</p>${items.map(i => `<div class="li"><span>${esc(ins(i.id_insumo).nombre)}</span><span class="r">${q(i.cantidad_requerida, i.id_insumo)}${i.cantidad_asignada != null ? ` · ${fmt(i.cantidad_asignada)} asig.` : ""}</span></div>`).join("")}</div>`; }).join("") || `<p class="muted">Aún no hay solicitudes.</p>`}
+  </div>`;
+}
+function alertas(){
+  const A = [];
+  filt("LOTE", l => l.cant_disponible > 0 && l.fecha_vencimiento && diasHasta(l.fecha_vencimiento) >= 0 && diasHasta(l.fecha_vencimiento) <= 30).sort((a, b) => M(a.fecha_vencimiento) - M(b.fecha_vencimiento)).forEach(l => A.push({tone:"orange", t:`${ins(l.id_insumo).nombre.replace(" oral", "").replace(" 500 mg", "")}, lote ${l.id_lote}`, d:`Vence el ${dmy(l.fecha_vencimiento)} · ${q(l.cant_disponible, l.id_insumo)} en ${sede(l.id_sede).nombre}.`}));
+  filt("SEDE", s => s.tipo === "Albergue").forEach(s => { const o = personasActivas(s.id_sede); if (o >= s.capacidad) A.push({tone:"red", t:`${s.nombre.replace("Albergue Escuela ", "").replace("Albergue ", "")} al 100 %`, d:`${o} de ${s.capacidad} personas: no admite más familias (ORA-20005).`}); });
+  const s = UI.role === "coord" ? mySede() : null;
+  filt("FAMILIA", f => f.estado === "Activa" && (!s || f.id_sede === s.id_sede)).forEach(f => [1, 2, 3, 8].forEach(i => { const max = ins(i).maximo_semanal * integrantes(f.id_familia); const r = recibido7(f.id_familia, i, S.clock); if (max > 0 && r >= max) A.push({tone:"blue", t:`La familia ${f.id_familia} completó su cupo de ${ins(i).nombre.toLowerCase()}`, d:`${q(r, i)} de ${q(max, i)} en los últimos 7 días.`}); }));
+  return A;
+}
+V["c-alertas"] = () => header("Coordinadora · Alertas", "Alertas", "Cupos, vencimientos y capacidad") + `<div class="scr">${alertas().map(a => aviso(a.tone, a.t, `<span>${esc(a.d)}</span>`)).join("") || `<p class="muted">Sin alertas.</p>`}</div>`;
+
+/* ---------- Centro de acopio ---------- */
+const lotesSede = sid => filt("LOTE", l => l.id_sede === sid);
+const vigente = (l, t) => !l.fecha_vencimiento || M(l.fecha_vencimiento) >= M(dayStart(t));
+const fefoOrden = (a, b) => (a.fecha_vencimiento ? M(a.fecha_vencimiento) : Infinity) - (b.fecha_vencimiento ? M(b.fecha_vencimiento) : Infinity) || a.id_lote - b.id_lote;
+V["a-home"] = () => {
+  const s = mySede(); const L = lotesSede(s.id_sede);
+  const arroz = L.filter(l => l.id_insumo === 1).sort(fefoOrden);
+  const otros = L.filter(l => l.id_insumo !== 1).sort((a, b) => a.id_insumo - b.id_insumo || fefoOrden(a, b));
+  const pronto = L.filter(l => l.cant_disponible > 0 && l.fecha_vencimiento && diasHasta(l.fecha_vencimiento) <= 30);
+  return header("Centro de acopio", "Inventario por lotes", s.nombre) + `<div class="scr">
+    <div class="card"><div class="split" style="align-items:flex-start"><span class="sec">Arroz · salida FEFO</span><span class="muted sm" style="text-align:right">vence primero, sale primero</span></div>
+      ${arroz.map(l => `<div class="li"><span><b>Lote ${l.id_lote}</b> · vence ${dmy(l.fecha_vencimiento)}</span>${l.cant_disponible <= 0 ? tag("Agotado", "gray") : tag(q(l.cant_disponible, 1), "blue")}</div>`).join("") || `<p class="muted">Sin lotes de arroz.</p>`}</div>
+    <div class="card"><div class="sec">Otros insumos</div>${otros.map(l => { const dv = l.fecha_vencimiento ? diasHasta(l.fecha_vencimiento) : null; return `<div class="li"><span><b>${esc(ins(l.id_insumo).nombre.replace(" personal", "").replace(" 500 mg", ""))}</b> · lote ${l.id_lote}</span>${l.cant_disponible <= 0 ? tag("Agotado", "gray") : tag(q(l.cant_disponible, l.id_insumo), dv !== null && dv <= 30 ? "orange" : "blue")}</div>`; }).join("")}</div>
+    ${pronto.map(l => aviso("orange", "Vence pronto", `<span>Lote ${l.id_lote} de ${esc(ins(l.id_insumo).nombre.toLowerCase())} vence el ${dmy(l.fecha_vencimiento)}. Despáchelo primero.</span>`)).join("")}
+    <button class="btn" data-a="go" data-v="a-nuevo">Nuevo despacho</button>
+  </div>`;
+};
+V["a-lotes"] = () => {
+  const s = mySede(); const L = lotesSede(s.id_sede).sort((a, b) => b.id_lote - a.id_lote);
+  const F = UI.form.lote || (UI.form.lote = {iid:1, origen:"Donación", rec:HOY, ven:"2027-01-30", cant:"300"});
+  return header("Centro de acopio", "Lotes recibidos", s.nombre) + `<div class="scr">
+    <div class="card"><div class="sec">Recibir un lote</div><div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+      <div class="fld"><label for="lt-ins">Insumo</label><select id="lt-ins" data-k="lt-iid">${T("INSUMO").map(i => `<option value="${i.id_insumo}" ${F.iid === i.id_insumo ? "selected" : ""}>${esc(i.nombre)} (${i.perecedero === "S" ? "perecedero" : "no perecedero"})</option>`).join("")}</select></div>
+      <div class="fld"><label for="lt-or">Origen</label><select id="lt-or" data-k="lt-origen">${["Donación","Compra pública","Cooperación internacional"].map(o => `<option ${F.origen === o ? "selected" : ""}>${o}</option>`).join("")}</select></div>
+      <div class="grid2"><div class="fld"><label for="lt-rec">Recepción</label><input id="lt-rec" type="date" data-k="lt-rec" value="${F.rec}"></div><div class="fld"><label for="lt-ven">Vencimiento</label><input id="lt-ven" type="date" data-k="lt-ven" value="${F.ven}"></div></div>
+      <div class="fld" id="f-ltcant"><label for="lt-cant">Cantidad recibida (${uni(F.iid)})</label><input id="lt-cant" inputmode="decimal" data-k="lt-cant" value="${esc(F.cant)}"></div>
+      <p class="muted sm">Deje el vencimiento vacío para ver ORA-20002, o ponga una fecha a menos de 30 días de la recepción para ver ORA-20003.</p>
+      ${UI.flash || ""}
+      <button class="btn" data-a="lote-save">Registrar lote</button></div></div>
+    <div class="card"><div class="sec">Lotes de esta sede</div>${L.map(l => `<div class="li"><span><b>Lote ${l.id_lote}</b> · ${esc(ins(l.id_insumo).nombre)}<br><span class="muted sm">${esc(l.origen)} · recibido ${dmy(l.fecha_recepcion)} · ${l.fecha_vencimiento ? "vence " + dmy(l.fecha_vencimiento) : "sin vencimiento"}</span></span><span class="r">${fmt(l.cant_disponible)} / ${q(l.cant_recibida, l.id_insumo)}</span></div>`).join("")}</div>
+  </div>`;
+};
+function despachosSede(sid){ const ids = new Set(filt("DESPACHO_LOTE", dl => find("LOTE", l => l.id_lote === dl.id_lote).id_sede === sid).map(dl => dl.id_despacho)); return filt("DESPACHO", d => ids.has(d.id_despacho)).sort((a, b) => b.id_despacho - a.id_despacho); }
+V["a-desp"] = () => {
+  const s = mySede();
+  return header("Centro de acopio", "Despachos", s.nombre) + `<div class="scr">
+    <button class="btn" data-a="go" data-v="a-nuevo">Nuevo despacho</button>
+    ${UI.flash || ""}
+    ${despachosSede(s.id_sede).map(d => { const so = find("SOLICITUD", x => x.id_solicitud === d.id_solicitud); const dls = filt("DESPACHO_LOTE", x => x.id_despacho === d.id_despacho); return `<div class="card"><div class="split"><b>Despacho N.º ${d.id_despacho}</b>${tag(d.estado, DSP_T[d.estado])}</div>
+      <p class="muted sm" style="margin-top:2px">Solicitud ${d.id_solicitud} · ${esc(muni(so.id_municipio).nombre)} · placa ${esc(d.placa)} · ${esc(d.conductor)}</p>
+      ${dls.map(x => { const l = find("LOTE", y => y.id_lote === x.id_lote); return `<div class="li"><span>${esc(ins(l.id_insumo).nombre)} · lote ${l.id_lote}</span><span class="r">${q(x.cantidad, l.id_insumo)}</span></div>`; }).join("")}
+      <p class="muted sm" style="margin-top:8px">Salida ${dmyhm(d.fecha)}${d.fecha_recibido ? ` · recibido ${dmyhm(d.fecha_recibido)}` : ""}</p>
+      ${d.estado === "En tránsito" ? `<button class="btn sec2" style="height:44px;margin-top:10px" data-a="recibido" data-v="${d.id_despacho}">Confirmar recibido</button>` : ""}</div>`; }).join("")}
+  </div>`;
+};
+const solAsignadas = () => filt("SOLICITUD", s => s.estado === "Asignada");
+V["a-sols"] = () => header("Centro de acopio", "Solicitudes asignadas", "Listas para despachar después del reparto") + `<div class="scr">
+  ${solAsignadas().map(s => { const items = filt("SOLICITUD_INSUMO", x => x.id_solicitud === s.id_solicitud); return `<div class="card"><div class="split"><b>Solicitud N.º ${s.id_solicitud} · ${esc(muni(s.id_municipio).nombre)}</b>${tag(s.estado, "blue")}</div>${items.map(i => `<div class="li"><span>${esc(ins(i.id_insumo).nombre)}</span><span class="r">${fmt(i.cantidad_asignada)} de ${q(i.cantidad_requerida, i.id_insumo)}</span></div>`).join("")}<button class="btn sec2" style="height:44px;margin-top:10px" data-a="go-nuevo" data-v="${s.id_solicitud}">Despachar</button></div>`; }).join("") || `<p class="muted">No hay solicitudes en estado Asignada.</p>`}
+</div>`;
+V["a-nuevo"] = () => {
+  const s = mySede(); const sols = solAsignadas();
+  if (UI.params.done) return header("Centro de acopio", "Nuevo despacho", s.nombre) + `<div class="scr">${aviso("green", `Despacho N.º ${UI.params.done} en tránsito`, `<span>Salió de ${esc(s.nombre)}. El trigger descontó la cantidad de cada lote y la solicitud pasó a Despachada.</span>`, "trigger T_DESPACHO_LOTE_SALIDA")}<button class="btn sec2" data-a="tabgo" data-v="a-desp">Ver despachos</button></div>`;
+  if (!sols.length) return header("Centro de acopio", "Nuevo despacho", s.nombre) + `<div class="scr"><p class="muted">No hay solicitudes asignadas por despachar.</p></div>`;
+  const F = UI.form.desp || (UI.form.desp = {sid: sols.find(x => x.id_solicitud === 12) ? 12 : sols[0].id_solicitud, placa:"SNP219", cond:"Hernán Darío Quintero"});
+  if (!sols.find(x => x.id_solicitud === F.sid)) F.sid = sols[0].id_solicitud;
+  const so = find("SOLICITUD", x => x.id_solicitud === F.sid); const si = filt("SOLICITUD_INSUMO", x => x.id_solicitud === F.sid)[0];
+  const iid = si.id_insumo; const qty = si.cantidad_asignada;
+  const lots = lotesSede(s.id_sede).filter(l => l.id_insumo === iid && vigente(l, S.clock)).sort(fefoOrden);
+  let left = qty; const plan = lots.map(l => { const sale = l.cant_disponible > 0 ? Math.min(l.cant_disponible, left) : 0; left -= sale; return {l, sale}; });
+  return header("Centro de acopio", "Nuevo despacho", s.nombre) + `<div class="scr">
+    <div class="fld"><label for="dp-sol">Solicitud</label><select id="dp-sol" data-k="dp-sid">${sols.map(x => { const y = filt("SOLICITUD_INSUMO", z => z.id_solicitud === x.id_solicitud)[0]; return `<option value="${x.id_solicitud}" ${x.id_solicitud === F.sid ? "selected" : ""}>N.º ${x.id_solicitud} · ${esc(muni(x.id_municipio).nombre)} · ${esc(ins(y.id_insumo).nombre)} ${fmt(y.cantidad_asignada)} ${uni(y.id_insumo)}</option>`; }).join("")}</select></div>
+    <div class="card"><div class="sec">Solicitud N.º ${so.id_solicitud} · ${esc(muni(so.id_municipio).nombre)}</div><div style="font-size:17px;font-weight:700;margin-top:6px">${esc(ins(iid).nombre)} · ${q(qty, iid)} asignados</div><p class="muted sm">en el reparto proporcional</p></div>
+    <div class="card"><div class="sec">Lotes que salen (FEFO)</div>${plan.map(({l, sale}) => `<div class="li"><span><b>Lote ${l.id_lote}</b> · vence ${l.fecha_vencimiento ? dmy(l.fecha_vencimiento) : "—"}<br><span class="muted sm">${fmt(l.cant_disponible)} ${uni(iid)} disponibles</span></span>${l.cant_disponible <= 0 ? tag("Agotado: se salta", "gray") : sale > 0 ? tag(`Sale ${q(sale, iid)}`, "green") : tag("No se usa", "gray")}</div>`).join("") || `<p class="muted">Esta sede no tiene lotes de ${esc(ins(iid).nombre.toLowerCase())}.</p>`}
+      ${left > 0 ? `<p class="sm" style="color:var(--red);margin-top:8px">Faltan ${q(left, iid)} en esta sede: el trigger rechazará el despacho.</p>` : ""}</div>
+    <div class="grid2"><div class="fld" id="f-placa"><label for="dp-placa">Placa</label><input id="dp-placa" data-k="dp-placa" value="${esc(F.placa)}" maxlength="8"></div><div class="fld"><label for="dp-est">Estado</label><input id="dp-est" value="En tránsito" readonly></div></div>
+    <div class="fld"><label for="dp-cond">Conductor</label><input id="dp-cond" data-k="dp-cond" value="${esc(F.cond)}"></div>
+    ${UI.flash || ""}
+    <button class="btn" data-a="desp-save">Confirmar despacho</button>
+  </div>`;
+};
+
+/* ---------- Administrador ---------- */
+V["ad-home"] = () => {
+  const p = user(); const d = find("DESASTRE", x => x.id_desastre === 1);
+  const af = filt("AFECTACION", a => a.id_desastre === 1).sort((a, b) => b.habitantes_riesgo - a.habitantes_riesgo);
+  const maxH = af[0].habitantes_riesgo;
+  const alb = filt("SEDE", s => s.tipo === "Albergue").map(s => ({s, o:personasActivas(s.id_sede)})).sort((a, b) => b.o / b.s.capacidad - a.o / a.s.capacidad);
+  return header("Administradora", `Hola, ${p.nombres}`, `Terremoto M ${fmt(d.magnitud)} · ${dmy(d.fecha)}`) + `<div class="scr">
+    <div class="card"><span class="sec">Municipios con más habitantes en riesgo</span>
+      ${af.slice(0, 6).map(a => `<div style="margin-top:12px"><div class="split sm"><b style="font-size:14px">${esc(muni(a.id_municipio).nombre)}</b><span class="num">${fmt(a.habitantes_riesgo)} ${tag(a.nivel_dano, NIV_T[a.nivel_dano])}</span></div><div style="margin-top:6px">${bar(a.habitantes_riesgo / maxH * 100, a.nivel_dano === "Crítico" ? "var(--red)" : "var(--blue)")}</div></div>`).join("")}
+      <p class="muted sm" style="margin-top:10px">Tabla AFECTACION, desastre 1 · ${af.length} municipios afectados.</p></div>
+    <div class="tiles">
+      <button class="tile" data-a="tabgo" data-v="ad-reparto"><span class="ic blue">${ic("scale")}</span><b>Reparto proporcional</b><span>Arroz · 2.ª ronda</span></button>
+      <button class="tile" data-a="go" data-v="ad-cuad"><span class="ic green">${ic("users")}</span><b>Cuadrillas</b><span>Rescatistas en terreno</span></button>
+    </div>
+    <div class="card"><div class="sec">Ocupación de albergues</div>${alb.map(({s, o}) => `<div class="li"><span>${esc(s.nombre.replace("Albergue ", ""))}</span><span class="r">${o}/${s.capacidad} ${o >= s.capacidad ? tag("Lleno", "red") : ""}</span></div>`).join("")}</div>
+  </div>`;
+};
+V["ad-reparto"] = () => {
+  const R = S.reparto; const calc = !!UI.params.calc; const sim = UI.form.sim ?? R.disponible;
+  const pend = repartoFilas(1, 1, R.desde);
+  return header("Administrador · Reparto", "Reparto proporcional", `Arroz · solicitudes desde el ${dmy(R.desde)}`) + `<div class="scr">
+    <div class="card split" style="align-items:flex-end"><div><div class="sec">Disponible</div><div class="big" style="font-size:30px;white-space:nowrap">${fmt(R.disponible)} kg</div></div><div style="text-align:right"><div class="sec">Pedido</div><div class="big" style="font-size:30px;white-space:nowrap;color:var(--red)">${fmt(R.demanda)} kg</div></div></div>
+    <p class="muted">No alcanza para todos: se reparte según los habitantes en riesgo de cada municipio.</p>
+    <div class="card">${R.filas.slice().sort((a, b) => b.hab - a.hab).map((f, k, arr) => { const pct = f.asignado / f.pedido * 100; const so = find("SOLICITUD", x => x.id_solicitud === f.id_solicitud); return `<div style="${k < arr.length - 1 ? "margin-bottom:16px" : ""}"><div class="split"><b style="font-size:16px">${esc(muni(f.id_municipio).nombre)}</b><span class="muted num">${fmt(f.hab)} hab.</span></div>
+      <div class="split" style="margin:4px 0 8px"><span class="muted num">${calc ? `${fmt(f.asignado)} de ${fmt(f.pedido)} kg` : `? de ${fmt(f.pedido)} kg`}</span><b class="num" style="color:var(--blue);font-size:17px">${calc ? fmt(Math.round(pct * 10) / 10) + " %" : ""}</b></div>
+      <div class="bar"><i class="rep-bar" data-w="${pct}" style="width:${calc ? pct : 0}%"></i></div><p class="muted sm" style="margin-top:6px">Solicitud N.º ${f.id_solicitud} · estado actual: ${esc(so.estado)}</p></div>`; }).join("")}</div>
+    ${calc ? aviso("green", "Reparto calculado", `<span>${fmt(R.disponible)} × habitantes ÷ ${fmt(R.totalHab)}: ${R.filas.slice().sort((a, b) => b.hab - a.hab).map(f => fmt(f.asignado)).join(" + ")} = ${fmt(R.filas.reduce((s, f) => s + f.asignado, 0))} kg. Las solicitudes quedan en estado Asignada.</span>`, "procedimiento P_REPARTO_PROPORCIONAL") : `<button class="btn" data-a="rep-calc">Calcular reparto</button>`}
+    <div class="card"><div class="sec">Simular otra disponibilidad</div><p class="muted sm" style="margin-top:6px">Misma fórmula del procedimiento (TRUNC y LEAST). No modifica la base de datos.</p>
+      <input type="range" min="0" max="3000" step="10" value="${sim}" data-k="sim" aria-label="Disponibilidad simulada en kilos" style="width:100%;margin-top:12px;accent-color:var(--blue)">
+      <div id="sim-out">${simOut(sim)}</div></div>
+    ${pend.length ? `<div class="card"><div class="sec">Solicitudes de arroz pendientes ahora</div><p class="muted sm" style="margin-top:6px">${pend.length} solicitud(es) nuevas desde el ${dmy(R.desde)}. Disponible hoy en todos los centros: ${fmt(disponibleInsumo(1, R.desde))} kg.</p></div>${UI.flash || ""}<button class="btn" data-a="rep-run">Ejecutar P_REPARTO_PROPORCIONAL</button>` : (UI.flash || "")}
+  </div>`;
+};
+function simOut(v){
+  v = Math.max(0, Number(v) || 0);
+  const R = S.reparto; const filas = R.filas.map(f => ({si:{cantidad_requerida:f.pedido}, hab:f.hab, f}));
+  const C = calcReparto(v, filas); const tot = C.res.reduce((s, x) => s + x.asignado, 0);
+  return `<div class="split" style="margin-top:8px"><b class="num">${fmt(v)} kg disponibles</b><span class="muted sm">${C.suficiente ? "alcanza para todo" : "no alcanza"}</span></div>
+    ${C.res.map(x => `<div class="li"><span>${esc(muni(x.f.id_municipio).nombre)}</span><span class="r">${fmt(x.asignado)} de ${fmt(x.f.pedido)} kg</span></div>`).join("")}
+    <p class="sm" style="margin-top:8px">Total asignado: <b class="num">${fmt(tot)} kg</b>${!C.suficiente && v - tot > 0 ? ` · quedan ${fmt(v - tot)} kg sin asignar por el truncamiento (TRUNC)` : ""}${C.suficiente && v - tot > 0 ? ` · sobran ${fmt(v - tot)} kg` : ""}</p>`;
+}
+V["ad-des"] = () => header("Administrador · Desastres", "Desastres", "Tabla DESASTRE y su relación Afecta con MUNICIPIO") + `<div class="scr">
+  ${T("DESASTRE").map(d => `<button class="tile" style="flex-direction:row;align-items:center;justify-content:space-between" data-a="go" data-v="ad-desd" data-p="${d.id_desastre}"><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><b style="font-size:14.5px">${d.id_desastre}. ${esc(d.nombre)}</b><span>${esc(d.tipo)}${d.magnitud ? ` · M ${fmt(d.magnitud)}` : ""} · ${dmy(d.fecha)}</span></span>${tag(d.estado, d.estado === "Activo" ? "red" : "gray")}</button>`).join("")}
+</div>`;
+V["ad-desd"] = () => {
+  const d = find("DESASTRE", x => x.id_desastre === Number(UI.params.id)); const af = filt("AFECTACION", a => a.id_desastre === d.id_desastre).sort((a, b) => b.habitantes_riesgo - a.habitantes_riesgo);
+  const ed = UI.params.edit;
+  return header(`Desastre ${d.id_desastre} · ${d.tipo}`, d.nombre, `${dmyhm(d.fecha)} · ${d.estado}`) + `<div class="scr">
+    <p class="muted sm">${esc(d.descripcion)}</p>
+    ${UI.flash || ""}
+    ${af.map(a => { const m = muni(a.id_municipio); const F = UI.form.af || {}; return `<div class="card"><div class="split"><b>${esc(m.nombre)}</b>${tag(a.nivel_dano, NIV_T[a.nivel_dano])}</div>
+      <p class="muted sm" style="margin-top:4px">${fmt(a.habitantes_riesgo)} habitantes en riesgo · ${fmt(a.porc_infraestructura)} % infraestructura · ${a.falla_agua_energia === "S" ? "falla de agua y energía" : "sin falla total"}</p>
+      ${ed === a.id_municipio ? `<div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+        <div class="grid2"><div class="fld"><label for="af-niv">Nivel de daño</label><select id="af-niv" data-k="af-niv">${["Bajo","Medio","Alto","Crítico"].map(n => `<option ${F.niv === n ? "selected" : ""}>${n}</option>`).join("")}</select></div><div class="fld"><label for="af-por">% infraestructura</label><input id="af-por" inputmode="decimal" data-k="af-por" value="${esc(F.por)}"></div></div>
+        <div class="fld"><label for="af-fa">Falla de agua y energía</label><select id="af-fa" data-k="af-fa"><option value="N" ${F.fa === "N" ? "selected" : ""}>N · no</option><option value="S" ${F.fa === "S" ? "selected" : ""}>S · sí</option></select></div>
+        <div class="btn-row"><button class="btn sec2" data-a="af-cancel">Cancelar</button><button class="btn" data-a="af-save" data-v="${a.id_municipio}">Guardar</button></div></div>` : `<button class="btn sec2" style="height:40px;margin-top:10px" data-a="af-edit" data-v="${a.id_municipio}">Editar afectación</button>`}</div>`; }).join("")}
+    <p class="muted sm">Pruebe marcar un municipio como Crítico con poca infraestructura comprometida y sin falla: la base de datos lo rechaza (ORA-02290).</p>
+  </div>`;
+};
+V["ad-per"] = () => {
+  const grp = UI.params.g || "Rescatistas";
+  const lists = {Administradores:T("ADMINISTRADOR").map(a => ({p:per(a.id_personal), d:a.cargo})), Coordinadores:T("COORDINADOR").map(c => ({p:per(c.id_personal), d:(find("SEDE", s => s.id_coordinador === c.id_personal) || {}).nombre || "—"})), Rescatistas:T("RESCATISTA").map(r => ({p:per(r.id_personal), d:`${r.institucion} · ${r.especialidad}`, tg:r.disponibilidad}))};
+  return header("Administrador · Personal", "Personal", "PERSONAL «Es» Administrador, Coordinador o Rescatista") + `<div class="scr">
+    <div class="pills">${Object.keys(lists).map(k => `<button class="pill ${grp === k ? "on" : ""}" data-a="per-g" data-v="${k}">${k} · ${lists[k].length}</button>`).join("")}</div>
+    <button class="tile" style="flex-direction:row;align-items:center;gap:12px" data-a="go" data-v="ad-cuad"><span class="ic green">${ic("users")}</span><span style="display:flex;flex-direction:column"><b>Cuadrillas</b><span>Asignar rescatistas · trigger T_CUAD_RESC_VALIDAR</span></span></button>
+    <div class="card">${lists[grp].map(x => { const tels = filt("TELEFONO_PERSONAL", t => t.id_personal === x.p.id_personal).map(t => t.telefono); return `<div class="li" style="align-items:flex-start"><span style="min-width:0"><b>${esc(nombreP(x.p))}</b><br><span class="muted sm">${esc(x.d)}</span><br><span class="muted sm">${esc(x.p.correo)}${tels.length ? " · tel. " + tels.join(", ") : ""}</span></span>${x.tg ? tag(x.tg, x.tg === "Asignado" ? "orange" : x.tg === "Inactivo" ? "gray" : "green") : ""}</div>`; }).join("")}</div>
+  </div>`;
+};
+V["ad-cuad"] = () => {
+  const n0 = M(S.clock);
+  const cs = T("CUADRILLA").slice().sort((a, b) => M(b.fecha_inicio) - M(a.fecha_inicio));
+  const F = UI.form.cr || (UI.form.cr = {pid:22, cid:9});
+  return header("Administrador · Cuadrillas", "Cuadrillas", "Relación Conforma entre CUADRILLA y RESCATISTA") + `<div class="scr">
+    <div class="card"><div class="sec">Asignar rescatista</div><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+      <div class="fld"><label for="cr-p">Rescatista</label><select id="cr-p" data-k="cr-pid">${T("RESCATISTA").map(r => `<option value="${r.id_personal}" ${F.pid === r.id_personal ? "selected" : ""}>${r.id_personal} · ${esc(nombreP(per(r.id_personal)))} (${r.disponibilidad})</option>`).join("")}</select></div>
+      <div class="fld"><label for="cr-c">Cuadrilla</label><select id="cr-c" data-k="cr-cid">${T("CUADRILLA").map(c => `<option value="${c.id_cuadrilla}" ${F.cid === c.id_cuadrilla ? "selected" : ""}>${c.id_cuadrilla} · ${esc(c.nombre.replace("Cuadrilla ", ""))} (${dm(c.fecha_inicio)} – ${dm(c.fecha_fin)})</option>`).join("")}</select></div>
+      ${UI.flash || ""}
+      <button class="btn" data-a="cr-save">Asignar</button></div></div>
+    <p class="muted sm">Un rescatista no puede quedar en dos cuadrillas con fechas cruzadas (trigger T_CUAD_RESC_VALIDAR). Pruebe: Daniela Ocampo (22) en Ícaro (9).</p>
+    ${cs.map(c => { const act = M(c.fecha_inicio) <= n0 && M(c.fecha_fin) > n0; const mem = filt("CUADRILLA_RESCATISTA", x => x.id_cuadrilla === c.id_cuadrilla).map(x => per(x.id_personal)); return `<div class="card"><div class="split"><b>${esc(c.nombre)}</b>${act ? tag("En terreno", "green") : M(c.fecha_inicio) > n0 ? tag("Programada", "blue") : tag("Finalizada", "gray")}</div><p class="muted sm" style="margin-top:2px">${esc(muni(c.id_municipio).nombre)} · ${dm(c.fecha_inicio)} → ${dm(c.fecha_fin)}</p><p class="sm" style="margin-top:6px">${mem.map(m => esc(m.nombres.split(" ")[0] + " " + m.apellidos.split(" ")[0])).join(" · ")}</p></div>`; }).join("")}
+  </div>`;
+};
+
+/* ---------- Rescatista ---------- */
+const miCuadrilla = () => { const n0 = M(S.clock); return filt("CUADRILLA_RESCATISTA", x => x.id_personal === UI.uid).map(x => find("CUADRILLA", c => c.id_cuadrilla === x.id_cuadrilla)).find(c => M(c.fecha_inicio) <= n0 && M(c.fecha_fin) > n0); };
+const ESP = {"Búsqueda y rescate en estructuras colapsadas":"Estructuras", "Rescate acuático":"Rescate acuático", "Telecomunicaciones de emergencia":"Telecomunicaciones"};
+V["r-home"] = () => {
+  const p = user(); const r = find("RESCATISTA", x => x.id_personal === UI.uid); const c = miCuadrilla();
+  let cuad = `<div class="card"><p class="muted">Sin cuadrilla vigente.</p></div>`;
+  if (c){
+    const totalD = Math.round((M(c.fecha_fin) - M(c.fecha_inicio)) / 1440); const dia = Math.floor((M(S.clock) - M(c.fecha_inicio)) / 1440) + 1;
+    const mem = filt("CUADRILLA_RESCATISTA", x => x.id_cuadrilla === c.id_cuadrilla).map(x => ({p:per(x.id_personal), r:find("RESCATISTA", y => y.id_personal === x.id_personal)})).sort((a, b) => (a.p.id_personal === UI.uid ? -1 : b.p.id_personal === UI.uid ? 1 : a.p.id_personal - b.p.id_personal));
+    cuad = `<div class="card"><div class="split"><span class="sec">Mi cuadrilla</span>${tag(r.disponibilidad, r.disponibilidad === "Asignado" ? "orange" : "green")}</div>
+      <div style="font-size:24px;font-weight:800;margin-top:8px">${esc(c.nombre)}</div><p class="muted">${esc(muni(c.id_municipio).nombre)} · ${dm(c.fecha_inicio)} → ${dm(c.fecha_fin)}</p>
+      <div style="margin-top:12px">${bar(dia / totalD * 100, "var(--green)")}</div><p class="muted sm" style="margin-top:8px">Día ${dia} de ${totalD}</p></div>
+      <div class="card"><div class="sec">Integrantes</div>${mem.map(m => { const nn = m.p.nombres.split(" "); return `<div class="li"><span><b>${esc(nn[0])}${nn[1] ? " " + esc(nn[1][0]) + "." : ""} ${esc(m.p.apellidos.split(" ")[0])}</b> · ${esc(m.r.institucion)}</span><span class="r">${esc(ESP[m.r.especialidad] || m.r.especialidad)}</span></div>`; }).join("")}</div>`;
+  }
+  return header(`Rescatista · ${r.institucion}`, `${p.nombres} ${p.apellidos.split(" ")[0]}`, r.especialidad) + `<div class="scr">${cuad}
+    <p class="muted sm">La base de datos no deja asignar a un rescatista a dos cuadrillas con fechas cruzadas.</p>
+    <button class="btn" data-a="go" data-v="r-sol">Pedir ayuda para la zona</button></div>`;
+};
+V["r-cuad"] = () => {
+  const mine = filt("CUADRILLA_RESCATISTA", x => x.id_personal === UI.uid).map(x => find("CUADRILLA", c => c.id_cuadrilla === x.id_cuadrilla)).sort((a, b) => M(b.fecha_inicio) - M(a.fecha_inicio));
+  const n0 = M(S.clock);
+  return header("Rescatista", "Mis cuadrillas", "Historial en la relación Conforma") + `<div class="scr">${mine.map(c => { const act = M(c.fecha_inicio) <= n0 && M(c.fecha_fin) > n0; return `<div class="card"><div class="split"><b>${esc(c.nombre)}</b>${act ? tag("En terreno", "green") : tag("Finalizada", "gray")}</div><p class="muted sm" style="margin-top:2px">${esc(muni(c.id_municipio).nombre)} · ${dmyhm(c.fecha_inicio)} → ${dmyhm(c.fecha_fin)}</p></div>`; }).join("")}
+    <p class="muted sm">Las fechas no se cruzan: Alfa USAR termina el 19/10 a las 08:00, justo cuando empieza Fénix.</p></div>`;
+};
+V["r-sol"] = () => { const c = miCuadrilla(); return header("Rescatista · Solicitud", "Pedir ayuda para la zona", `La realiza ${nombreP(user())}`) + `<div class="scr">${solForm(c ? c.id_municipio : "76109")}</div>`; };
+V["r-sols"] = () => solList("Rescatista · Solicitudes", "r-sol");
+V["r-perfil"] = () => {
+  const p = user(); const r = find("RESCATISTA", x => x.id_personal === UI.uid); const tels = filt("TELEFONO_PERSONAL", t => t.id_personal === UI.uid).map(t => t.telefono);
+  return header("Rescatista", "Mi perfil", `Código ${p.id_personal}`) + `<div class="scr"><div class="card">
+    ${[["Documento", p.documento], ["Correo", p.correo], ["Teléfonos", tels.join(", ") || "—"], ["Institución", r.institucion], ["Especialidad", r.especialidad], ["Disponibilidad", r.disponibilidad]].map(([k, v]) => `<div class="li"><span class="muted">${k}</span><span style="text-align:right">${esc(v)}</span></div>`).join("")}</div>
+    <p class="muted sm">El teléfono es un atributo multivalorado: se guarda en la tabla TELEFONO_PERSONAL.</p></div>`;
+};
+
+/* ---------- Jefe de hogar ---------- */
+const famSede = () => sede(fam(UI.fid).id_sede);
+V["j-home"] = () => {
+  const fid = UI.fid; const ms = miembros(fid).sort((a, b) => (b.jefe_hogar === "S") - (a.jefe_hogar === "S") || a.id_beneficiario - b.id_beneficiario);
+  const ents = filt("ENTREGA", e => e.id_familia === fid).sort((a, b) => M(b.fecha) - M(a.fecha));
+  const nota = b => b.jefe_hogar === "S" ? tag("Jefe de hogar", "blue") : b.lesionado === "S" ? tag("Lesionado(a)", "red") : edad(b.fecha_nacimiento) < 18 ? `<span class="muted sm">Menor de edad</span>` : "";
+  return header("Jefe de hogar", `Familia N.º ${fid}`, famSede().nombre) + `<div class="scr">
+    <div class="card" style="display:flex;flex-direction:column;align-items:center;gap:10px">${qrHTML(fid, 196)}<p class="muted">Muestre este código al recibir ayudas</p></div>
+    <div class="card"><div class="sec">Integrantes (${ms.length})</div>${ms.map(b => `<div class="mem"><b>${esc(b.nombres)}</b>${nota(b)}</div>`).join("")}</div>
+    <div class="card"><div class="sec">Mis ayudas</div>${ents.map(e => `<div class="li"><span><b>${esc(ins(e.id_insumo).nombre)}</b> · ${dmy(e.fecha)}</span><span class="r">${q(e.cantidad, e.id_insumo)}</span></div>`).join("") || `<p class="muted" style="margin-top:8px">Aún no ha recibido ayudas.</p>`}</div>
+    <p class="muted sm">Cupo de arroz: ${fmt(ins(1).maximo_semanal)} kg por persona cada semana.</p>
+  </div>`;
+};
+V["j-qr"] = () => header("Jefe de hogar", "Mi carné", `Familia N.º ${UI.fid}`) + `<div class="scr"><div class="card" style="display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">${qrHTML(UI.fid, 240)}<div style="font-size:22px;font-weight:800">Familia N.º ${UI.fid}</div><p class="muted">${esc(nombreP(jefe(UI.fid)))} · ${integrantes(UI.fid)} integrantes</p><p class="muted sm">El QR contiene el código ${UI.fid}: el mismo id_familia de la tabla FAMILIA.</p></div></div>`;
+V["j-ayudas"] = () => {
+  const fid = UI.fid; const n = integrantes(fid);
+  return header("Jefe de hogar", "Mis cupos", "Máximo semanal por persona × integrantes") + `<div class="scr">
+    ${[1, 2, 3, 8].map(i => { const max = ins(i).maximo_semanal * n; const r = recibido7(fid, i, S.clock); const pct = max ? r / max * 100 : 0; return `<div class="card"><div class="split"><b>${esc(ins(i).nombre)}</b><span class="muted sm num">${fmt(ins(i).maximo_semanal)} × ${n}</span></div><div class="split" style="margin:8px 0"><span class="num">${fmt(r)} de ${q(max, i)} usados</span>${r >= max ? tag("Cupo completo", "red") : tag(`Quedan ${q(max - r, i)}`, "green")}</div>${bar(pct, r >= max ? "var(--red)" : "var(--green)")}</div>`; }).join("")}
+    <p class="muted sm">Se suman las entregas de los últimos 7 días, igual que el trigger T_ENTREGA_CUPO.</p>
+  </div>`;
+};
+V["j-perfil"] = () => {
+  const fid = UI.fid; const s = famSede();
+  return header("Jefe de hogar", "Mi familia", `${s.nombre} · ${muni(s.id_municipio).nombre}`) + `<div class="scr">
+    <div class="card">${miembros(fid).map(b => `<div class="li" style="align-items:flex-start"><span><b>${esc(b.nombres)} ${esc(b.apellidos)}</b><br><span class="muted sm">Doc. ${b.documento} · ${edad(b.fecha_nacimiento)} años${b.lesionado === "S" ? " · lesionado(a)" : ""}</span></span>${b.jefe_hogar === "S" ? tag("Jefe", "blue") : ""}</div>`).join("")}</div>
+    <p class="muted sm">La edad no se guarda: es un atributo derivado que se calcula con la fecha de nacimiento (al 30/10/2026).</p>
+    <div class="card">${[["Albergue", s.nombre], ["Dirección", s.direccion], ["Estado de la familia", fam(fid).estado]].map(([k, v]) => `<div class="li"><span class="muted">${k}</span><span style="text-align:right">${esc(v)}</span></div>`).join("")}</div>
+  </div>`;
+};
+
+/* ================= Panel de sustentación ================= */
+const INFO = {
+  login:{t:"Acceso", d:"El personal entra con correo y contraseña; la contraseña se guarda cifrada con SHA-256 (STANDARD_HASH). El jefe de hogar entra con su documento.", tablas:["PERSONAL","ADMINISTRADOR","COORDINADOR","RESCATISTA","BENEFICIARIO"], reglas:[], sql:"SELECT p.id_personal, p.nombres\n  FROM personal p\n WHERE p.correo = :correo\n   AND p.contrasena = RAWTOHEX(STANDARD_HASH(:documento || ':' || :clave, 'SHA256'));"},
+  "c-home":{t:"Inicio del coordinador", d:"La ocupación cuenta los beneficiarios de las familias activas del albergue (consulta 1). Las últimas entregas salen de la tabla ENTREGA.", tablas:["SEDE","FAMILIA","BENEFICIARIO","ENTREGA","INSUMO"], reglas:[], consulta:1},
+  "c-scan":{t:"Escanear carné", d:"El QR solo contiene el id_familia. Con ese código se busca la familia y su jefe de hogar.", tablas:["FAMILIA","BENEFICIARIO"], reglas:["ORA-20010"]},
+  "c-entrega":{t:"Entregar ayuda", d:"Cupo = maximo_semanal × integrantes. El trigger suma lo recibido en los últimos 7 días (fecha > nueva − 7) y rechaza si se pasa.", tablas:["ENTREGA","FAMILIA","INSUMO","BENEFICIARIO"], reglas:["ORA-20010","ORA-20011"], sql:"INSERT INTO entrega (id_familia, id_insumo, fecha, cantidad)\nVALUES (:familia, :insumo, SYSDATE, :cantidad);  -- T_ENTREGA_CUPO", consulta:2},
+  "c-censo":{t:"Censo", d:"Se inserta la familia y luego cada integrante. Si un integrante falla, se deshace todo (ROLLBACK).", tablas:["FAMILIA","BENEFICIARIO"], reglas:["ORA-20005","ORA-20006","ORA-00001"], sql:"INSERT INTO familia (id_familia, estado, id_sede) VALUES (13, 'Activa', 1);\nINSERT INTO beneficiario (id_beneficiario, documento, ..., jefe_hogar, contrasena, id_familia)\nVALUES (45, '1077512345', ..., 'S', RAWTOHEX(STANDARD_HASH(...)), 13);"},
+  "c-sol":{t:"Nueva solicitud", d:"Relación Realiza: PERSONAL (1,1) — Realiza — (0,N) SOLICITUD, implementada con la llave foránea solicitud.id_personal. Los insumos van en SOLICITUD_INSUMO (relación Pide).", tablas:["SOLICITUD","SOLICITUD_INSUMO","MUNICIPIO"], reglas:[], sql:"INSERT INTO solicitud (id_solicitud, fecha, prioridad, estado, id_personal, id_municipio)\nVALUES (14, SYSDATE, 'Alta', 'Pendiente', 11, '27001');\nINSERT INTO solicitud_insumo (id_solicitud, id_insumo, cantidad_requerida) VALUES (14, 1, 200);"},
+  "c-sols":{t:"Mis solicitudes", d:"Solicitudes cuyo id_personal es la persona que inició sesión.", tablas:["SOLICITUD","SOLICITUD_INSUMO","INSUMO"], reglas:[]},
+  "c-alertas":{t:"Alertas", d:"Lotes con existencias que vencen en los próximos 30 días (consulta 3), albergues llenos y familias que completaron su cupo.", tablas:["LOTE","SEDE","FAMILIA","ENTREGA"], reglas:["ORA-20005","ORA-20011"], consulta:3},
+  "a-home":{t:"Inventario por lotes", d:"Cada lote guarda lo recibido y lo disponible. Los despachos descuentan lo disponible. FEFO: sale primero el que vence antes.", tablas:["LOTE","INSUMO","SEDE"], reglas:["ORA-20009"], consulta:3},
+  "a-lotes":{t:"Recibir lote", d:"T_LOTE_VALIDAR revisa que la sede sea un centro de acopio, que los perecederos traigan vencimiento y que venzan 30 días o más después de la recepción. También iguala cant_disponible a cant_recibida.", tablas:["LOTE","INSUMO","SEDE"], reglas:["ORA-20001","ORA-20002","ORA-20003"], sql:"INSERT INTO lote (id_lote, origen, fecha_recepcion, fecha_vencimiento, cant_recibida, id_insumo, id_sede)\nVALUES (15, 'Donación', SYSDATE, :vence, 300, 1, 8);  -- T_LOTE_VALIDAR"},
+  "a-desp":{t:"Despachos", d:"Trazabilidad de cada despacho con sus lotes (consulta 4). Al confirmar el recibido se guarda fecha_recibido.", tablas:["DESPACHO","DESPACHO_LOTE","LOTE","SOLICITUD"], reglas:[], consulta:4},
+  "a-sols":{t:"Solicitudes asignadas", d:"Solicitudes en estado Asignada después del reparto, listas para despachar.", tablas:["SOLICITUD","SOLICITUD_INSUMO"], reglas:[]},
+  "a-nuevo":{t:"Nuevo despacho", d:"Por cada lote se inserta una fila en DESPACHO_LOTE. El trigger valida existencias, vencimiento y orden FEFO, y descuenta el lote.", tablas:["DESPACHO","DESPACHO_LOTE","LOTE","SOLICITUD"], reglas:["ORA-20007","ORA-20008","ORA-20009"], sql:"INSERT INTO despacho (id_despacho, fecha, placa, conductor, estado, id_solicitud)\nVALUES (14, SYSDATE, 'SNP219', 'Hernán Darío Quintero', 'En tránsito', 12);\nINSERT INTO despacho_lote (id_despacho, id_lote, cantidad) VALUES (14, 1, 240);"},
+  "ad-home":{t:"Inicio del administrador", d:"Habitantes en riesgo por municipio en el terremoto (tabla AFECTACION, desastre 1) y ocupación de albergues (consulta 1).", tablas:["DESASTRE","AFECTACION","MUNICIPIO","SEDE"], reglas:[], consulta:1},
+  "ad-reparto":{t:"Reparto proporcional", d:"P_REPARTO_PROPORCIONAL: si lo disponible no alcanza, cada solicitud recibe TRUNC(disponible × habitantes ÷ total), sin pasar de lo pedido, y queda en estado Asignada.", tablas:["SOLICITUD","SOLICITUD_INSUMO","AFECTACION","LOTE"], reglas:["ORA-20014"], sql:"BEGIN\n  P_REPARTO_PROPORCIONAL(1, 1, TO_DATE('28/10/2026','DD/MM/YYYY'));\nEND;", consulta:5},
+  "ad-des":{t:"Desastres", d:"Diez desastres; la relación Afecta (tabla AFECTACION) guarda el daño en cada municipio.", tablas:["DESASTRE","AFECTACION"], reglas:["ORA-02290"]},
+  "ad-desd":{t:"Afectación municipal", d:"CHECK C_AFECTACION_CRITICO_CK: un municipio solo es Crítico con más del 40 % de infraestructura comprometida o con falla de agua y energía.", tablas:["AFECTACION","MUNICIPIO"], reglas:["ORA-02290"], sql:"UPDATE afectacion SET nivel_dano = 'Crítico'\n WHERE id_desastre = 1 AND id_municipio = '76001';"},
+  "ad-per":{t:"Personal", d:"Especialización: ADMINISTRADOR, COORDINADOR y RESCATISTA usan el mismo id_personal como llave primaria y foránea. El teléfono multivalorado está en TELEFONO_PERSONAL.", tablas:["PERSONAL","ADMINISTRADOR","COORDINADOR","RESCATISTA","TELEFONO_PERSONAL"], reglas:[]},
+  "ad-cuad":{t:"Cuadrillas", d:"T_CUAD_RESC_VALIDAR: un rescatista Inactivo no se asigna y no puede estar en dos cuadrillas con fechas cruzadas.", tablas:["CUADRILLA","CUADRILLA_RESCATISTA","RESCATISTA"], reglas:["ORA-20012","ORA-20013"], sql:"INSERT INTO cuadrilla_rescatista (id_cuadrilla, id_personal) VALUES (9, 22);"},
+  "r-home":{t:"Inicio del rescatista", d:"Cuadrilla vigente del rescatista y sus integrantes (relación Conforma).", tablas:["RESCATISTA","CUADRILLA","CUADRILLA_RESCATISTA","PERSONAL"], reglas:["ORA-20013"]},
+  "r-cuad":{t:"Historial de cuadrillas", d:"Todas las cuadrillas del rescatista; sus fechas no se cruzan.", tablas:["CUADRILLA","CUADRILLA_RESCATISTA"], reglas:["ORA-20013"]},
+  "r-sol":{t:"Pedir ayuda", d:"El rescatista también hace solicitudes (relación Realiza). El administrador no hace solicitudes: es una restricción de la app, no de Oracle.", tablas:["SOLICITUD","SOLICITUD_INSUMO"], reglas:[]},
+  "r-sols":{t:"Mis solicitudes", d:"Solicitudes realizadas por el rescatista.", tablas:["SOLICITUD","SOLICITUD_INSUMO"], reglas:[]},
+  "r-perfil":{t:"Perfil", d:"Datos de PERSONAL y RESCATISTA, y teléfonos de TELEFONO_PERSONAL.", tablas:["PERSONAL","RESCATISTA","TELEFONO_PERSONAL"], reglas:[]},
+  "j-home":{t:"Jefe de hogar", d:"Integrantes de la familia, su carné y las entregas recibidas (consulta 2).", tablas:["FAMILIA","BENEFICIARIO","ENTREGA","INSUMO"], reglas:[], consulta:2},
+  "j-qr":{t:"Carné QR", d:"El QR guarda el id_familia, la llave primaria de FAMILIA.", tablas:["FAMILIA"], reglas:[]},
+  "j-ayudas":{t:"Cupos", d:"Cupo semanal calculado igual que T_ENTREGA_CUPO.", tablas:["ENTREGA","INSUMO","BENEFICIARIO"], reglas:["ORA-20011"]},
+  "j-perfil":{t:"Mi familia", d:"La edad es un atributo derivado: se calcula y no se guarda.", tablas:["BENEFICIARIO","FAMILIA","SEDE"], reglas:[]}
+};
+const CONSULTAS = [
+  {n:1, t:"Ocupación de cada albergue", sql:`SELECT s.nombre AS albergue, m.nombre AS municipio, s.capacidad AS capacidad,
+       COUNT(DISTINCT f.id_familia) AS familias,
+       COUNT(b.id_beneficiario) AS personas,
+       ROUND(COUNT(b.id_beneficiario) * 100 / s.capacidad, 1) AS porc_ocupacion
+  FROM sede s, municipio m, familia f, beneficiario b
+ WHERE s.id_municipio = m.id_municipio
+   AND f.id_sede = s.id_sede
+   AND b.id_familia = f.id_familia
+   AND s.tipo = 'Albergue'
+   AND f.estado = 'Activa'
+ GROUP BY s.nombre, m.nombre, s.capacidad
+ ORDER BY porc_ocupacion DESC;`, run(){ return {cols:["albergue","municipio","capacidad","familias","personas","porc_ocupacion"], rows:filt("SEDE", s => s.tipo === "Albergue").map(s => { const fs = filt("FAMILIA", f => f.id_sede === s.id_sede && f.estado === "Activa" && miembros(f.id_familia).length); const pe = fs.reduce((a, f) => a + miembros(f.id_familia).length, 0); return fs.length ? [s.nombre, muni(s.id_municipio).nombre, s.capacidad, fs.length, pe, Math.round(pe * 1000 / s.capacidad) / 10] : null; }).filter(Boolean).sort((a, b) => b[5] - a[5])}; }},
+  {n:2, t:"Entregas recibidas por cada familia", sql:`SELECT f.id_familia AS codigo_qr, b.nombres AS jefe_nombres, b.apellidos AS jefe_apellidos,
+       s.nombre AS albergue, i.nombre AS insumo, e.cantidad AS cantidad,
+       i.unidad AS unidad, e.fecha AS fecha_entrega
+  FROM entrega e, familia f, beneficiario b, insumo i, sede s
+ WHERE e.id_familia = f.id_familia
+   AND b.id_familia = f.id_familia
+   AND b.jefe_hogar = 'S'
+   AND e.id_insumo = i.id_insumo
+   AND f.id_sede = s.id_sede
+ ORDER BY f.id_familia, e.fecha;`, run(){ return {cols:["codigo_qr","jefe_nombres","jefe_apellidos","albergue","insumo","cantidad","unidad","fecha_entrega"], rows:T("ENTREGA").slice().sort((a, b) => a.id_familia - b.id_familia || M(a.fecha) - M(b.fecha)).map(e => { const j = jefe(e.id_familia); const I = ins(e.id_insumo); return [e.id_familia, j.nombres, j.apellidos, sede(fam(e.id_familia).id_sede).nombre, I.nombre, e.cantidad, I.unidad, dmyhm(e.fecha)]; })}; }},
+  {n:3, t:"Lotes que vencen en noviembre o diciembre de 2026", sql:`SELECT s.nombre AS centro_acopio, m.nombre AS municipio, i.nombre AS insumo,
+       l.id_lote AS lote, l.fecha_vencimiento AS vence,
+       l.cant_disponible AS disponible, i.unidad AS unidad
+  FROM lote l, insumo i, sede s, municipio m
+ WHERE l.id_insumo = i.id_insumo
+   AND l.id_sede = s.id_sede
+   AND s.id_municipio = m.id_municipio
+   AND l.cant_disponible > 0
+   AND l.fecha_vencimiento BETWEEN TO_DATE('01/11/2026','DD/MM/YYYY')
+                               AND TO_DATE('31/12/2026','DD/MM/YYYY')
+ ORDER BY l.fecha_vencimiento;`, run(){ return {cols:["centro_acopio","municipio","insumo","lote","vence","disponible","unidad"], rows:filt("LOTE", l => l.cant_disponible > 0 && l.fecha_vencimiento && l.fecha_vencimiento >= "2026-11-01" && l.fecha_vencimiento <= "2026-12-31T23:59").sort((a, b) => M(a.fecha_vencimiento) - M(b.fecha_vencimiento)).map(l => { const s = sede(l.id_sede); return [s.nombre, muni(s.id_municipio).nombre, ins(l.id_insumo).nombre, l.id_lote, dmy(l.fecha_vencimiento), l.cant_disponible, ins(l.id_insumo).unidad]; })}; }},
+  {n:4, t:"Trazabilidad de los despachos", sql:`SELECT d.id_despacho AS despacho, d.fecha AS salida, se.nombre AS centro_acopio,
+       m.nombre AS municipio_destino, i.nombre AS insumo, l.id_lote AS lote,
+       dl.cantidad AS cantidad, d.placa AS placa, d.estado AS estado
+  FROM despacho d, solicitud so, municipio m, despacho_lote dl, lote l, insumo i, sede se
+ WHERE d.id_solicitud = so.id_solicitud
+   AND so.id_municipio = m.id_municipio
+   AND dl.id_despacho = d.id_despacho
+   AND dl.id_lote = l.id_lote
+   AND l.id_insumo = i.id_insumo
+   AND l.id_sede = se.id_sede
+ ORDER BY d.id_despacho, l.id_lote;`, run(){ return {cols:["despacho","salida","centro_acopio","municipio_destino","insumo","lote","cantidad","placa","estado"], rows:T("DESPACHO_LOTE").slice().sort((a, b) => a.id_despacho - b.id_despacho || a.id_lote - b.id_lote).map(dl => { const d = find("DESPACHO", x => x.id_despacho === dl.id_despacho); const so = find("SOLICITUD", x => x.id_solicitud === d.id_solicitud); const l = find("LOTE", x => x.id_lote === dl.id_lote); return [d.id_despacho, dmyhm(d.fecha), sede(l.id_sede).nombre, muni(so.id_municipio).nombre, ins(l.id_insumo).nombre, l.id_lote, dl.cantidad, d.placa, d.estado]; })}; }},
+  {n:5, t:"Reparto proporcional del arroz (segunda ronda)", sql:`SELECT s.id_solicitud AS solicitud, m.nombre AS municipio,
+       a.habitantes_riesgo AS habitantes_riesgo,
+       si.cantidad_requerida AS pedido_kg, si.cantidad_asignada AS asignado_kg,
+       ROUND(si.cantidad_asignada * 100 / si.cantidad_requerida, 1) AS porc_atendido
+  FROM solicitud s, solicitud_insumo si, insumo i, municipio m, afectacion a
+ WHERE si.id_solicitud = s.id_solicitud
+   AND si.id_insumo = i.id_insumo
+   AND s.id_municipio = m.id_municipio
+   AND a.id_municipio = s.id_municipio
+   AND a.id_desastre = 1
+   AND i.nombre = 'Arroz'
+   AND s.fecha >= TO_DATE('28/10/2026','DD/MM/YYYY')
+ ORDER BY a.habitantes_riesgo DESC;`, run(){ return {cols:["solicitud","municipio","habitantes_riesgo","pedido_kg","asignado_kg","porc_atendido"], rows:filt("SOLICITUD", s => M(s.fecha) >= M("2026-10-28T00:00")).map(s => { const si = find("SOLICITUD_INSUMO", x => x.id_solicitud === s.id_solicitud && x.id_insumo === 1); const a = find("AFECTACION", x => x.id_municipio === s.id_municipio && x.id_desastre === 1); return si && a ? [s.id_solicitud, muni(s.id_municipio).nombre, a.habitantes_riesgo, si.cantidad_requerida, si.cantidad_asignada, si.cantidad_asignada == null ? null : Math.round(si.cantidad_asignada * 1000 / si.cantidad_requerida) / 10] : null; }).filter(Boolean).sort((a, b) => b[2] - a[2])}; }}
+];
+// Pruebas de las reglas (3_SCRIPT_CONSULTAS.sql y complementarias). Se ejecutan y luego ROLLBACK.
+const HASH = d => sha256(`${d}:QR-${d}`);
+const RULES = [
+  {code:"ORA-20001", r:"Un lote solo se recibe en un centro de acopio", src:"T_LOTE_VALIDAR", sql:"INSERT INTO lote (id_lote, origen, fecha_recepcion, fecha_vencimiento, cant_recibida, id_insumo, id_sede)\nVALUES (90, 'Donación', TO_DATE('30/10/2026','DD/MM/YYYY'), TO_DATE('30/03/2027','DD/MM/YYYY'), 100, 1, 1);  -- la sede 1 es un albergue", run:() => insLote({id_lote:90, origen:"Donación", fecha_recepcion:"2026-10-30T00:00", fecha_vencimiento:"2027-03-30T00:00", cant_recibida:100, id_insumo:1, id_sede:1})},
+  {code:"ORA-20002", r:"Un perecedero debe tener fecha de vencimiento", src:"T_LOTE_VALIDAR", sql:"INSERT INTO lote (id_lote, origen, fecha_recepcion, fecha_vencimiento, cant_recibida, id_insumo, id_sede)\nVALUES (90, 'Donación', TO_DATE('30/10/2026','DD/MM/YYYY'), NULL, 100, 1, 8);", run:() => insLote({id_lote:90, origen:"Donación", fecha_recepcion:"2026-10-30T00:00", fecha_vencimiento:null, cant_recibida:100, id_insumo:1, id_sede:8})},
+  {code:"ORA-20003", r:"No se recibe un lote que vence en menos de 30 días", src:"T_LOTE_VALIDAR · prueba 1", sql:"INSERT INTO lote (id_lote, origen, fecha_recepcion, fecha_vencimiento, cant_recibida, id_insumo, id_sede)\nVALUES (90, 'Donación', TO_DATE('25/10/2026','DD/MM/YYYY'), TO_DATE('10/11/2026','DD/MM/YYYY'), 50, 4, 9);", run:() => insLote({id_lote:90, origen:"Donación", fecha_recepcion:"2026-10-25T00:00", fecha_vencimiento:"2026-11-10T00:00", cant_recibida:50, id_insumo:4, id_sede:9})},
+  {code:"ORA-20004", r:"Una familia solo se registra en un albergue", src:"T_FAMILIA_VALIDAR", sql:"INSERT INTO familia (id_familia, estado, id_sede) VALUES (90, 'Activa', 8);  -- la sede 8 es un centro de acopio", run:() => insFamilia({id_familia:90, estado:"Activa", id_sede:8})},
+  {code:"ORA-20005", r:"No se acepta gente en un albergue lleno", src:"T_BENEFICIARIO_VALIDAR · prueba 2", sql:"INSERT INTO beneficiario (id_beneficiario, documento, nombres, apellidos, fecha_nacimiento, lesionado, jefe_hogar, id_familia)\nVALUES (90, '9990001', 'Prueba', 'Capacidad', TO_DATE('01/01/2000','DD/MM/YYYY'), 'N', 'N', 10);", run:() => insBenef({id_beneficiario:90, documento:"9990001", nombres:"Prueba", apellidos:"Capacidad", fecha_nacimiento:"2000-01-01T00:00", lesionado:"N", jefe_hogar:"N", contrasena:null, id_familia:10})},
+  {code:"ORA-20006", r:"Solo hay un jefe de hogar por familia", src:"T_BENEFICIARIO_VALIDAR", sql:"INSERT INTO beneficiario (id_beneficiario, documento, nombres, apellidos, fecha_nacimiento, lesionado, jefe_hogar, contrasena, id_familia)\nVALUES (91, '9990002', 'Prueba', 'Jefe', TO_DATE('01/01/1990','DD/MM/YYYY'), 'N', 'S', '...', 1);", run:() => insBenef({id_beneficiario:91, documento:"9990002", nombres:"Prueba", apellidos:"Jefe", fecha_nacimiento:"1990-01-01T00:00", lesionado:"N", jefe_hogar:"S", contrasena:HASH("9990002"), id_familia:1})},
+  {code:"ORA-20007", r:"No se despacha más de lo disponible en el lote", src:"T_DESPACHO_LOTE_SALIDA · prueba 4", sql:"INSERT INTO despacho_lote (id_despacho, id_lote, cantidad) VALUES (12, 6, 5000);", run:() => insDespachoLote({id_despacho:12, id_lote:6, cantidad:5000})},
+  {code:"ORA-20008", r:"No se despacha un lote vencido", src:"T_DESPACHO_LOTE_SALIDA", sql:"INSERT INTO despacho (id_despacho, fecha, placa, conductor, estado, id_solicitud)\nVALUES (90, TO_DATE('01/04/2027 08:00','DD/MM/YYYY HH24:MI'), 'PRB001', 'Prueba', 'En tránsito', 12);\nINSERT INTO despacho_lote (id_despacho, id_lote, cantidad) VALUES (90, 1, 10);  -- el lote 1 vence el 30/03/2027", run:() => { insDespacho({id_despacho:90, fecha:"2027-04-01T08:00", placa:"PRB001", conductor:"Prueba", estado:"En tránsito", fecha_recibido:null, id_solicitud:12}); insDespachoLote({id_despacho:90, id_lote:1, cantidad:10}); }},
+  {code:"ORA-20009", r:"FEFO: sale primero el lote que vence antes", src:"T_DESPACHO_LOTE_SALIDA", sql:"INSERT INTO lote (id_lote, origen, fecha_recepcion, fecha_vencimiento, cant_recibida, id_insumo, id_sede)\nVALUES (91, 'Donación', TO_DATE('30/10/2026','DD/MM/YYYY'), TO_DATE('15/12/2026','DD/MM/YYYY'), 50, 1, 8);\nINSERT INTO despacho (id_despacho, fecha, placa, conductor, estado, id_solicitud)\nVALUES (91, SYSDATE, 'PRB002', 'Prueba', 'En tránsito', 12);\nINSERT INTO despacho_lote (id_despacho, id_lote, cantidad) VALUES (91, 1, 10);  -- el lote 91 vence antes que el 1", run:() => { insLote({id_lote:91, origen:"Donación", fecha_recepcion:"2026-10-30T00:00", fecha_vencimiento:"2026-12-15T00:00", cant_recibida:50, id_insumo:1, id_sede:8}); insDespacho({id_despacho:91, fecha:S.clock, placa:"PRB002", conductor:"Prueba", estado:"En tránsito", fecha_recibido:null, id_solicitud:12}); insDespachoLote({id_despacho:91, id_lote:1, cantidad:10}); }},
+  {code:"ORA-20010", r:"No se entrega a una familia inactiva", src:"T_ENTREGA_CUPO", sql:"INSERT INTO entrega (id_familia, id_insumo, fecha, cantidad) VALUES (12, 1, SYSDATE, 2);  -- la familia 12 está Inactiva", run:() => insEntrega({id_familia:12, id_insumo:1, fecha:S.clock, cantidad:2})},
+  {code:"ORA-20011", r:"Cupo semanal (últimos 7 días)", src:"T_ENTREGA_CUPO · prueba 3", sql:"INSERT INTO entrega (id_familia, id_insumo, fecha, cantidad)\nVALUES (1, 1, TO_DATE('18/10/2026 10:00','DD/MM/YYYY HH24:MI'), 5);", run:() => insEntrega({id_familia:1, id_insumo:1, fecha:"2026-10-18T10:00", cantidad:5})},
+  {code:"ORA-20012", r:"Un rescatista inactivo no se asigna", src:"T_CUAD_RESC_VALIDAR", sql:"INSERT INTO cuadrilla_rescatista (id_cuadrilla, id_personal) VALUES (10, 28);  -- el 28 está Inactivo", run:() => insCuadResc({id_cuadrilla:10, id_personal:28})},
+  {code:"ORA-20013", r:"Un rescatista no puede estar en dos cuadrillas con fechas cruzadas", src:"T_CUAD_RESC_VALIDAR · prueba 5", sql:"INSERT INTO cuadrilla_rescatista (id_cuadrilla, id_personal) VALUES (9, 22);", run:() => insCuadResc({id_cuadrilla:9, id_personal:22})},
+  {code:"ORA-20014", r:"Reparto sin habitantes en riesgo", src:"P_REPARTO_PROPORCIONAL", sql:"INSERT INTO afectacion VALUES (1, '05001', 'Bajo', 0, 1, 'N');  -- Medellín sin habitantes en riesgo\nINSERT INTO solicitud VALUES (90, TO_DATE('30/10/2026 23:59','DD/MM/YYYY HH24:MI'), 'Alta', 'Pendiente', 11, '05001');\nINSERT INTO solicitud_insumo (id_solicitud, id_insumo, cantidad_requerida) VALUES (90, 1, 5000);\nBEGIN P_REPARTO_PROPORCIONAL(1, 1, TO_DATE('30/10/2026 23:59','DD/MM/YYYY HH24:MI')); END;  -- solo entra la solicitud 90", run:() => { insAfectacion({id_desastre:1, id_municipio:"05001", nivel_dano:"Bajo", habitantes_riesgo:0, porc_infraestructura:1, falla_agua_energia:"N"}); const t = "2026-10-30T23:59"; insSolicitud({id_solicitud:90, fecha:t, prioridad:"Alta", estado:"Pendiente", id_personal:11, id_municipio:"05001"}); insSolInsumo({id_solicitud:90, id_insumo:1, cantidad_requerida:5000, cantidad_asignada:null}); pReparto(1, 1, t); }},
+  {code:"ORA-02290", r:"Municipio Crítico solo con más del 40 % de infraestructura o falla de agua y energía", src:"CHECK C_AFECTACION_CRITICO_CK · prueba 6", sql:"INSERT INTO afectacion (id_desastre, id_municipio, nivel_dano, habitantes_riesgo, porc_infraestructura, falla_agua_energia)\nVALUES (2, '76001', 'Crítico', 100, 10, 'N');", run:() => insAfectacion({id_desastre:2, id_municipio:"76001", nivel_dano:"Crítico", habitantes_riesgo:100, porc_infraestructura:10, falla_agua_energia:"N"})},
+  {code:"ORA-00001", r:"Documento único en el censo", src:"UNIQUE C_BENEFICIARIO_DOC_UK · prueba 7", sql:"INSERT INTO beneficiario (id_beneficiario, documento, nombres, apellidos, fecha_nacimiento, lesionado, jefe_hogar, id_familia)\nVALUES (91, '1077415838', 'Luz Dary', 'Duplicada', TO_DATE('02/07/1982','DD/MM/YYYY'), 'N', 'N', 2);", run:() => insBenef({id_beneficiario:91, documento:"1077415838", nombres:"Luz Dary", apellidos:"Duplicada", fecha_nacimiento:"1982-07-02T00:00", lesionado:"N", jefe_hogar:"N", contrasena:null, id_familia:2})}
+];
+const ruleRes = {};
+const hl = sql => esc(sql).replace(/\b(SELECT|FROM|WHERE|AND|OR|INSERT INTO|VALUES|UPDATE|SET|ORDER BY|GROUP BY|BEGIN|END|AS|BETWEEN|COUNT|ROUND|DISTINCT|NULL|TO_DATE|SYSDATE)\b/g, '<span class="k">$1</span>');
+function cellVal(c, v){
+  if (v == null) return '<span style="color:var(--gray-light)">NULL</span>';
+  if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(v)) return v.endsWith("T00:00") ? dmy(v) : dmyhm(v);
+  if (c === "contrasena") return `<span title="${esc(v)}">${esc(v.slice(0, 12))}…</span>`;
+  return esc(typeof v === "number" ? String(v).replace(".", ",") : v);
+}
+function tableHTML(cols, rows, max = 200){
+  return `<div class="tbl-w"><table><thead><tr>${cols.map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${rows.slice(0, max).map(r => `<tr>${r.map((v, i) => `<td class="${String(v ?? "").length > 40 ? "wrapc" : ""}">${cellVal(cols[i], v)}</td>`).join("")}</tr>`).join("") || `<tr><td colspan="${cols.length}" style="color:var(--gray)">Sin filas.</td></tr>`}</tbody></table></div>${rows.length > max ? `<p class="sm muted">Se muestran ${max} de ${rows.length} filas.</p>` : ""}`;
+}
+function logItem(l){ return `<div class="logi ${l.ok ? "ok" : "err"}"><span class="m">${dmyhm(l.t)} · ${l.ok ? "correcta" : "rechazada"}</span><code>${esc(l.sql)}</code>${l.ok ? "" : `<span style="color:var(--red-text);font-family:var(--mono);font-size:11px">${esc(l.err)} · ${esc(l.src)}</span>`}</div>`; }
+function panelHTML(){
+  const info = INFO[UI.screen] || INFO.login;
+  const tabs = [["pantalla","Esta pantalla"],["tablas","Tablas (21)"],["consultas","Consultas (5)"],["reglas","Reglas"],["bitacora","Bitácora SQL"]];
+  let body = "";
+  if (UI.ptab === "pantalla"){
+    body = `<div><div class="p-sec">Pantalla</div><h3 style="font-size:18px;margin-top:4px">${esc(info.t)}</h3><p style="margin-top:6px;color:#33405A">${esc(info.d)}</p></div>
+      <div><div class="p-sec" style="margin-bottom:8px">Tablas que usa</div><div class="chips">${info.tablas.map(t => `<button class="chip-t" data-a="ptable" data-v="${t}">${t}</button>`).join("")}</div></div>
+      ${info.reglas.length ? `<div><div class="p-sec" style="margin-bottom:8px">Reglas que aplica</div>${info.reglas.map(c => { const R = RULES.find(x => x.code === c); return `<div class="split" style="padding:6px 0;border-bottom:1px solid var(--line)"><span><b style="font-family:var(--mono);font-size:12px">${c}</b> · ${esc(R.r)}</span><button class="sbtn" data-a="prule" data-v="${c}">Probar</button></div>`; }).join("")}</div>` : ""}
+      ${info.sql ? `<div><div class="p-sec" style="margin-bottom:8px">Sentencia equivalente</div><pre class="sql">${hl(info.sql)}</pre></div>` : ""}
+      ${info.consulta ? (() => { const C = CONSULTAS[info.consulta - 1]; const r = C.run(); return `<div><div class="p-sec" style="margin-bottom:8px">Consulta ${C.n} de 3_SCRIPT_CONSULTAS.sql</div><p style="font-weight:600;margin-bottom:6px">${esc(C.t)}</p>${tableHTML(r.cols, r.rows, 12)}</div>`; })() : ""}
+      <div><div class="p-sec" style="margin-bottom:8px">Últimas sentencias</div><div style="display:flex;flex-direction:column;gap:10px">${S.log.slice(0, 3).map(logItem).join("")}</div></div>`;
+  } else if (UI.ptab === "tablas"){
+    const t = UI.ptable; const sc = SCHEMA[t];
+    body = `<div class="chips">${Object.keys(SCHEMA).map(k => `<button class="chip-t" style="${k === t ? "background:var(--navy);color:#fff" : ""}" data-a="ptable" data-v="${k}">${k} · ${DB[k].length}</button>`).join("")}</div>
+      <div class="split"><h3 style="font-size:16px">${t}</h3><span class="p-sec">${DB[t].length} filas · PK (${sc.pk.join(", ")})</span></div>
+      ${tableHTML(sc.cols, DB[t].map(r => sc.cols.map(c => r[c])))}`;
+  } else if (UI.ptab === "consultas"){
+    body = CONSULTAS.map(C => { const r = C.run(); return `<div><div class="p-sec">Consulta ${C.n}</div><h3 style="font-size:15px;margin:2px 0 8px">${esc(C.t)}</h3><details><summary style="cursor:pointer;font-size:12.5px;color:var(--blue);font-weight:600;margin-bottom:8px">Ver SQL</summary><pre class="sql" style="margin-bottom:8px">${hl(C.sql)}</pre></details>${tableHTML(r.cols, r.rows)}</div>`; }).join("");
+  } else if (UI.ptab === "reglas"){
+    body = `<p style="color:#33405A">Cada prueba ejecuta la sentencia y luego hace ROLLBACK: la base queda igual. Así se demuestra que Oracle no deja guardar datos que rompen las reglas.</p>
+      <div class="split"><span class="p-sec">${RULES.length} reglas · 6 triggers, 1 procedimiento, CHECK y UNIQUE</span><button class="sbtn dark" data-a="prule-all">Probar todas</button></div>
+      ${RULES.map(R => { const res = ruleRes[R.code]; return `<div class="rule" id="rule-${R.code}"><div class="rh"><div><b>${esc(R.r)}</b><div class="src">${R.code} · ${esc(R.src)}</div></div><button class="sbtn" data-a="prule" data-v="${R.code}">Probar</button></div><pre class="sql">${hl(R.sql)}</pre>${res ? `<div class="res ${res.ok ? "ok" : "err"}">${res.ok ? "La sentencia no falló" : `${esc(res.e.code)}: ${esc(res.e.message)}<br><span style="opacity:.8">${esc(res.e.src)} · ROLLBACK</span>`}</div>` : ""}</div>`; }).join("")}`;
+  } else {
+    body = `<p style="color:#33405A">Sentencias que la app envió a la base en esta sesión, con su resultado.</p><div style="display:flex;flex-direction:column;gap:10px">${S.log.map(logItem).join("")}</div>`;
+  }
+  return `<div class="p-head"><div class="row1"><div><h2>Sustentación · base de datos</h2><p>Simulación de apoyo. Lo implementado y evaluado es la base de datos en Oracle.</p></div>${UI.panelOpen ? `<button class="hbtn" style="color:var(--gray)" data-a="pclose" aria-label="Cerrar panel">${ic("x")}</button>` : ""}</div>
+    ${UI.panelOpen ? `<div style="display:flex;flex-direction:column;gap:8px;margin-top:10px"><div class="rolesw">${[["coord","Coordinador"],["acopio","Centro de acopio"],["admin","Administrador"],["resc","Rescatista"],["jefe","Jefe de hogar"]].map(([k, l]) => `<button class="${UI.role === k && UI.screen !== "login" ? "on" : ""}" data-a="qrole" data-v="${k}">${l}</button>`).join("")}</div><div><button class="sbtn" data-a="reset">${ic("reset", 15)} Restablecer datos</button></div></div>` : ""}
+    <div class="p-tabs" role="tablist">${tabs.map(([k, l]) => `<button class="${UI.ptab === k ? "on" : ""}" data-a="ptab" data-v="${k}" role="tab" aria-selected="${UI.ptab === k}">${l}</button>`).join("")}</div></div>
+    <div class="p-body">${body}</div>`;
+}
+
+/* ================= Render ================= */
+function render(){
+  const ae = document.activeElement; const fk = ae && ae !== document.body ? (ae.id ? "#" + ae.id : ae.dataset && ae.dataset.a ? `[data-a="${ae.dataset.a}"]${ae.dataset.v ? `[data-v="${ae.dataset.v}"]` : ""}` : null) : null;
+  try { draw(); } catch(e){ console.error(e); UI.role = null; UI.uid = null; UI.fid = null; UI.screen = "login"; UI.stack = []; UI.panelOpen = false; draw(); }
+  if (fk){ try { const n = document.querySelector(fk); if (n && n.focus) n.focus({preventScroll:true}); } catch(e){} }
+}
+function draw(){
+  const root = $("#app");
+  const scr = $(".scr"); const st = scr ? scr.scrollTop : 0;
+  const pb = $(".p-body"); const pst = pb ? pb.scrollTop : 0;
+  const isLogin = UI.screen === "login";
+  const tabs = UI.role && !isLogin ? ROLES[UI.role].tabs : [];
+  const activeTab = tabs.find(t => t[0] === UI.screen) ? UI.screen : (UI.stack[0] ? UI.stack[0].screen : (tabs[0] || [])[0]);
+  root.innerHTML = `<div class="stage">
+    <div class="top"><div class="brand">${LOGO(26, "#0E1A2F")}<div>ManoAmiga<small>Bases de Datos I · UNAB · Valeria Acosta Pabon y Luis Alejandro Cruz Guerrero</small></div></div>
+      <div class="sp"></div>
+      <div class="rolesw" aria-label="Cambiar de perfil">${[["coord","Coordinador"],["acopio","Centro de acopio"],["admin","Administrador"],["resc","Rescatista"],["jefe","Jefe de hogar"]].map(([k, l]) => `<button class="${UI.role === k && !isLogin ? "on" : ""}" data-a="qrole" data-v="${k}">${l}</button>`).join("")}</div>
+      <button class="sbtn" data-a="reset">${ic("reset", 15)} Restablecer datos</button></div>
+    <div class="wrap">
+      <div class="device"><div class="screen">
+        <div class="sbar"><span class="num">${hm(S.clock)}</span><span class="isl"></span><span style="letter-spacing:2px">●●● ▮</span></div>
+        ${isLogin ? V.login() : V[UI.screen]()}
+        ${tabs.length ? `<nav class="tabs" aria-label="Secciones">${tabs.map(([k, l, i]) => `<button class="${activeTab === k ? "on" : ""}" data-a="tabgo" data-v="${k}" ${activeTab === k ? 'aria-current="page"' : ""}>${ic(i, 22)}<span>${l}</span></button>`).join("")}</nav>` : ""}
+        <div id="toast-slot"></div>
+      </div></div>
+      <aside class="panel ${UI.panelOpen ? "open" : ""}" aria-label="Panel de sustentación">${panelHTML()}</aside>
+    </div>
+    ${UI.panelOpen ? "" : `<button class="fab ${isLogin ? "login-fab" : ""}" data-a="popen" aria-label="Abrir panel de base de datos">${ic("db", 18)} Base de datos</button>`}
+  </div>`;
+  $$(".qrt").forEach(drawQR);
+  const scr2 = $(".scr"); if (scr2 && UI.keepScroll) scr2.scrollTop = st;
+  const pb2 = $(".p-body"); if (pb2 && UI.keepPanelScroll) pb2.scrollTop = pst;
+  UI.keepScroll = false; UI.keepPanelScroll = false;
+}
+function toast(html){ const s = $("#toast-slot"); if (!s) return; s.innerHTML = `<div class="toast">${html}</div>`; clearTimeout(toast.t); toast.t = setTimeout(() => { const x = $("#toast-slot"); if (x) x.innerHTML = ""; }, 3800); }
+
+/* ================= Acciones ================= */
+function badField(id){ const el = document.getElementById(id); if (el){ el.classList.add("bad"); const i = el.querySelector("input,select"); if (i) i.focus(); } }
+function err(e){ return aviso("red", "Operación rechazada", `<span>${esc(e.message)}</span>`, oraLine(e)); }
+function toBottom(){ const s = $(".scr"); if (s) s.scrollTop = s.scrollHeight; }
+const num = v => { const t = String(v ?? "").trim().replace(",", "."); return t === "" ? NaN : Math.round(Number(t) * 100) / 100; };
+// Precisión de columnas NUMBER(p,2): más dígitos enteros de los permitidos da ORA-01438
+const prec = (c, ent, col) => c >= Math.pow(10, ent) ? aviso("red", "Valor demasiado grande", `<span>La columna ${col} admite como máximo ${ent} dígitos enteros.</span>`, "ORA-01438 · value larger than specified precision allowed for this column") : null;
+const A = {
+  lmode:el => { UI.login.mode = el.dataset.v; UI.flash = null; render(); },
+  lchip:el => { UI.login.chip = el.dataset.v; render(); },
+  dologin:() => {
+    if (UI.login.mode === "personal") return login(UI.login.chip);
+    const d = ($("#l-doc").value || "").trim(); UI.login.jdoc = d;
+    const b = find("BENEFICIARIO", x => x.documento === d && x.jefe_hogar === "S");
+    if (!b){ UI.flash = aviso("red", "Documento no encontrado", `<span>No hay un jefe de hogar con ese documento.</span>`); return render(); }
+    login("jefe", {fid:b.id_familia});
+  },
+  logout:() => logout(),
+  back:() => back(),
+  go:el => go(el.dataset.v, el.dataset.p ? {id:el.dataset.p} : {}),
+  tabgo:el => tab(el.dataset.v),
+  qrole:el => { const k = el.dataset.v; UI.panelOpen = false; if (k === "jefe") login("jefe", {fid:1}); else login(k); },
+  reset:() => {
+    if (UI.confirmReset){ UI.confirmReset = false; seed(); UI.form = {}; UI.flash = null; Object.keys(ruleRes).forEach(k => delete ruleRes[k]); sesionValida(); if (UI.role){ UI.stack = []; UI.screen = ROLES[UI.role].tabs[0][0]; UI.params = {}; } save(); render(); toast(aviso("green", "Datos restablecidos", "<span>Se cargaron de nuevo los datos de 2_SCRIPT_DATOS.sql.</span>")); }
+    else { UI.confirmReset = true; toast(aviso("orange", "¿Restablecer los datos?", "<span>Pulse otra vez «Restablecer datos» para volver al estado inicial.</span>")); setTimeout(() => UI.confirmReset = false, 4000); }
+  },
+  popen:() => { UI.panelOpen = true; render(); },
+  pclose:() => { UI.panelOpen = false; render(); },
+  ptab:el => { UI.ptab = el.dataset.v; render(); },
+  ptable:el => { UI.ptab = "tablas"; UI.ptable = el.dataset.v; render(); },
+  prule:el => { runRule(el.dataset.v); UI.ptab = "reglas"; render(); const n = document.getElementById("rule-" + el.dataset.v); if (n) n.scrollIntoView({block:"center"}); },
+  "prule-all":() => { RULES.forEach(R => runRule(R.code)); UI.keepPanelScroll = true; render(); },
+  // Coordinador
+  leer:el => go("c-entrega", {fid:Number(el.dataset.v), iid:1}),
+  "leer-cod":() => { const c = Number(($("#scan-cod").value || "").trim()); if (!fam(c)){ UI.flash = aviso("red", "Código no encontrado", `<span>No existe una familia con ese código.</span>`); UI.keepScroll = true; return render(); } go("c-entrega", {fid:c, iid:1}); },
+  "ent-ins":el => { UI.params.iid = Number(el.dataset.v); delete UI.params.cant; UI.flash = null; UI.keepScroll = true; render(); },
+  entregar:() => {
+    const fid = UI.params.fid, iid = UI.params.iid || 1; const raw = $("#ent-cant").value; const c = num(raw); UI.params.cant = raw;
+    if (!(c > 0)){ UI.flash = aviso("red", "Cantidad no válida", "<span>Escriba una cantidad mayor que cero.</span>", "CHECK C_ENTREGA_CANT_CK (cantidad > 0)"); UI.keepScroll = true; render(); toBottom(); return badField("f-cant"); }
+    const pe = prec(c, 6, "ENTREGA.cantidad NUMBER(8,2)"); if (pe){ UI.flash = pe; UI.keepScroll = true; render(); return toBottom(); }
+    const t = now(); const sql = `INSERT INTO entrega (id_familia, id_insumo, fecha, cantidad)\nVALUES (${fid}, ${iid}, TO_DATE('${dmyhm(t)}','DD/MM/YYYY HH24:MI'), ${c});`;
+    const r = tx(() => insEntrega({id_familia:fid, id_insumo:iid, fecha:t, cantidad:c})); logSql(sql, r);
+    if (r.ok){ UI.flash = aviso("green", "Entrega registrada", `<span>${q(c, iid)} de ${esc(ins(iid).nombre.toLowerCase())} para la familia ${fid}.</span>`, "trigger T_ENTREGA_CUPO · cupo verificado"); delete UI.params.cant; }
+    else if (r.e.code === "ORA-20011"){ const nx = proxCupo(fid, iid, c); UI.flash = aviso("red", "Entrega rechazada", `<span>La familia supera su cupo semanal.${nx ? ` Podrá recibir ${q(c, iid)} de nuevo desde el ${dmyhm(nx)}.` : " La cantidad pedida es mayor que su cupo semanal completo."}</span>`, oraLine(r.e)); }
+    else UI.flash = aviso("red", "Entrega rechazada", `<span>${esc(r.e.message)}</span>`, oraLine(r.e));
+    save(); UI.keepScroll = true; render(); toBottom();
+  },
+  "censo-add":() => { syncCenso(); UI.form.censo.rows.push({nombres:"", apellidos:"Palacios Mena", documento:"", nac:"", lesionado:false}); UI.keepScroll = true; render(); },
+  "censo-rm":el => { syncCenso(); UI.form.censo.rows.splice(Number(el.dataset.v), 1); UI.keepScroll = true; render(); },
+  "censo-new":() => { UI.form.censo = null; UI.params = {}; render(); },
+  "censo-save":() => {
+    syncCenso(); const rows = UI.form.censo.rows; const s = mySede();
+    for (const [k, r] of rows.entries()){
+      const who = k === 0 ? "del jefe de hogar" : `del integrante ${k + 1}`;
+      if (!r.nombres.trim() || !r.apellidos.trim()){ UI.flash = aviso("red", "Faltan datos", `<span>Escriba nombres y apellidos ${who}.</span>`, "nombres y apellidos son NOT NULL"); UI.keepScroll = true; render(); return toBottom(); }
+      if (!/^\d{5,15}$/.test(r.documento.trim())){ UI.flash = aviso("red", "Documento no válido", `<span>El documento ${who} debe tener entre 5 y 15 dígitos.</span>`, "documento VARCHAR2(15) NOT NULL"); UI.keepScroll = true; render(); return toBottom(); }
+      if (!r.nac || r.nac > HOY){ UI.flash = aviso("red", "Fecha de nacimiento", `<span>Indique una fecha de nacimiento válida ${who}.</span>`, "fecha_nacimiento DATE NOT NULL"); UI.keepScroll = true; render(); return toBottom(); }
+    }
+    const docs = rows.map(x => x.documento.trim()); if (new Set(docs).size !== docs.length){ UI.flash = aviso("red", "Documento repetido", "<span>Dos integrantes tienen el mismo documento. Cada persona debe tener un documento distinto.</span>", "UNIQUE C_BENEFICIARIO_DOC_UK"); UI.keepScroll = true; render(); return toBottom(); }
+    const fid = nextId("FAMILIA", "id_familia"); let bid = nextId("BENEFICIARIO", "id_beneficiario");
+    const lines = [`INSERT INTO familia (id_familia, estado, id_sede) VALUES (${fid}, 'Activa', ${s.id_sede});`];
+    const res = tx(() => { insFamilia({id_familia:fid, estado:"Activa", id_sede:s.id_sede}); rows.forEach((r, k) => { const doc = r.documento.trim(); lines.push(`INSERT INTO beneficiario (id_beneficiario, documento, nombres, ..., jefe_hogar, id_familia)\nVALUES (${bid}, '${doc}', '${r.nombres.trim()}', ..., '${k === 0 ? "S" : "N"}', ${fid});`); insBenef({id_beneficiario:bid++, documento:doc, nombres:r.nombres.trim(), apellidos:r.apellidos.trim(), fecha_nacimiento:r.nac + "T00:00", lesionado:r.lesionado ? "S" : "N", jefe_hogar:k === 0 ? "S" : "N", contrasena:k === 0 ? HASH(doc) : null, id_familia:fid}); }); });
+    logSql(lines.join("\n"), res);
+    if (!res.ok){ UI.flash = aviso("red", "Censo rechazado", `<span>${res.e.code === "ORA-00001" ? "Uno de los documentos ya está registrado en otra familia." : esc(res.e.message)} No se guardó ningún integrante (ROLLBACK).</span>`, oraLine(res.e)); UI.keepScroll = true; save(); render(); return toBottom(); }
+    UI.form.censo = null; save(); go("c-censo", {done:fid}, false);
+  },
+  "sol-ins":el => { UI.form.sol.iid = Number(el.dataset.v); UI.flash = null; UI.keepScroll = true; render(); },
+  "sol-prio":el => { UI.form.sol.prio = el.dataset.v; UI.keepScroll = true; render(); },
+  "sol-send":() => {
+    const F = UI.form.sol; const c = num(F.cant);
+    if (!(c > 0)){ UI.flash = aviso("red", "Cantidad no válida", "<span>La cantidad requerida debe ser mayor que cero.</span>", "CHECK C_SOL_INSUMO_REQ_CK"); UI.keepScroll = true; render(); toBottom(); return badField("f-solcant"); }
+    const pe = prec(c, 8, "SOLICITUD_INSUMO.cantidad_requerida NUMBER(10,2)"); if (pe){ UI.flash = pe; UI.keepScroll = true; render(); return toBottom(); }
+    const id = nextId("SOLICITUD", "id_solicitud"); const t = now();
+    const res = tx(() => { insSolicitud({id_solicitud:id, fecha:t, prioridad:F.prio, estado:"Pendiente", id_personal:UI.uid, id_municipio:F.mid}); insSolInsumo({id_solicitud:id, id_insumo:F.iid, cantidad_requerida:c, cantidad_asignada:null}); });
+    logSql(`INSERT INTO solicitud (id_solicitud, fecha, prioridad, estado, id_personal, id_municipio)\nVALUES (${id}, TO_DATE('${dmyhm(t)}','DD/MM/YYYY HH24:MI'), '${F.prio}', 'Pendiente', ${UI.uid}, '${F.mid}');\nINSERT INTO solicitud_insumo (id_solicitud, id_insumo, cantidad_requerida) VALUES (${id}, ${F.iid}, ${c});`, res);
+    UI.flash = res.ok ? aviso("green", `Solicitud N.º ${id} registrada · Pendiente`, `<span>${q(c, F.iid)} de ${esc(ins(F.iid).nombre.toLowerCase())} para ${esc(muni(F.mid).nombre)}, prioridad ${F.prio}. La realiza ${esc(nombreP(user()))}.</span>`, "relación Realiza · FK solicitud.id_personal") : err(res.e);
+    save(); UI.keepScroll = true; render(); toBottom();
+  },
+  // Centro de acopio
+  "lote-save":() => {
+    const F = UI.form.lote; const s = mySede(); const c = num(F.cant);
+    if (!F.rec){ UI.flash = aviso("red", "Falta la recepción", "<span>Indique la fecha de recepción.</span>", "fecha_recepcion DATE NOT NULL"); UI.keepScroll = true; return render(); }
+    if (!(c > 0)){ UI.flash = aviso("red", "Cantidad no válida", "<span>La cantidad recibida debe ser mayor que cero.</span>", "CHECK C_LOTE_RECIBIDA_CK"); UI.keepScroll = true; render(); return badField("f-ltcant"); }
+    const pe = prec(c, 8, "LOTE.cant_recibida NUMBER(10,2)"); if (pe){ UI.flash = pe; UI.keepScroll = true; return render(); }
+    const id = nextId("LOTE", "id_lote");
+    const row = {id_lote:id, origen:F.origen, fecha_recepcion:F.rec + "T00:00", fecha_vencimiento:F.ven ? F.ven + "T00:00" : null, cant_recibida:c, id_insumo:F.iid, id_sede:s.id_sede};
+    const res = tx(() => { now(); return insLote(row); });
+    logSql(`INSERT INTO lote (id_lote, origen, fecha_recepcion, fecha_vencimiento, cant_recibida, id_insumo, id_sede)\nVALUES (${id}, '${F.origen}', TO_DATE('${dmy(row.fecha_recepcion)}','DD/MM/YYYY'), ${row.fecha_vencimiento ? `TO_DATE('${dmy(row.fecha_vencimiento)}','DD/MM/YYYY')` : "NULL"}, ${c}, ${F.iid}, ${s.id_sede});`, res);
+    UI.flash = res.ok ? aviso("green", `Lote N.º ${id} recibido`, `<span>${q(c, F.iid)} de ${esc(ins(F.iid).nombre.toLowerCase())}. El trigger dejó cant_disponible = ${fmt(c)}.</span>`, "trigger T_LOTE_VALIDAR") : err(res.e);
+    save(); UI.keepScroll = true; render();
+  },
+  "go-nuevo":el => { UI.form.desp = {sid:Number(el.dataset.v), placa:"SNP219", cond:"Hernán Darío Quintero"}; go("a-nuevo"); },
+  "desp-save":() => {
+    const F = UI.form.desp; const s = mySede(); const si = filt("SOLICITUD_INSUMO", x => x.id_solicitud === F.sid)[0]; const iid = si.id_insumo; const qty = si.cantidad_asignada;
+    const placa = String(F.placa || "").trim().toUpperCase();
+    if (!F.cond || !F.cond.trim()){ UI.flash = aviso("red", "Falta el conductor", "<span>Escriba el nombre del conductor.</span>", "conductor VARCHAR2(80) NOT NULL"); UI.keepScroll = true; render(); return toBottom(); }
+    const id = nextId("DESPACHO", "id_despacho"); const t = now();
+    const lots = lotesSede(s.id_sede).filter(l => l.id_insumo === iid && vigente(l, t)).sort(fefoOrden);
+    let left = qty; const usos = [];
+    lots.forEach(l => { if (left <= 0 || l.cant_disponible <= 0) return; const c = Math.min(l.cant_disponible, left); usos.push({l:l.id_lote, c}); left -= c; });
+    // Si no alcanza, la app intenta sacar lo que falta del último lote: el trigger lo rechaza (ORA-20007), como haría Oracle.
+    if (left > 0 && usos.length) usos[usos.length - 1].c += left;
+    const lines = [`INSERT INTO despacho (id_despacho, fecha, placa, conductor, estado, id_solicitud)\nVALUES (${id}, TO_DATE('${dmyhm(t)}','DD/MM/YYYY HH24:MI'), '${placa}', '${F.cond.trim()}', 'En tránsito', ${F.sid});`].concat(usos.map(u => `INSERT INTO despacho_lote (id_despacho, id_lote, cantidad) VALUES (${id}, ${u.l}, ${u.c});`));
+    const res = tx(() => {
+      insDespacho({id_despacho:id, fecha:t, placa, conductor:F.cond.trim(), estado:"En tránsito", fecha_recibido:null, id_solicitud:F.sid});
+      if (!usos.length) raise("20007", "La cantidad supera lo disponible en el lote.", "trigger T_DESPACHO_LOTE_SALIDA");
+      usos.forEach(u => insDespachoLote({id_despacho:id, id_lote:u.l, cantidad:u.c}));
+      find("SOLICITUD", x => x.id_solicitud === F.sid).estado = "Despachada";
+    });
+    logSql(lines.join("\n") + (res.ok ? `\nUPDATE solicitud SET estado = 'Despachada' WHERE id_solicitud = ${F.sid};` : ""), res);
+    if (!res.ok){ UI.flash = res.e.code === "ORA-02290" ? aviso("red", "Placa no válida", "<span>La placa debe tener exactamente 6 caracteres.</span>", oraLine(res.e)) : aviso("red", "Despacho rechazado", `<span>${res.e.code === "ORA-20007" ? `Esta sede no tiene ${q(qty, iid)} de ${esc(ins(iid).nombre.toLowerCase())} disponibles. ` : ""}${esc(res.e.message)}</span>`, oraLine(res.e)); save(); UI.keepScroll = true; render(); return toBottom(); }
+    UI.form.desp = null; save(); go("a-nuevo", {done:id}, false);
+  },
+  recibido:el => {
+    const id = Number(el.dataset.v); const t = now();
+    const res = tx(() => { const d = find("DESPACHO", x => x.id_despacho === id); d.estado = "Entregado"; d.fecha_recibido = t; const so = find("SOLICITUD", x => x.id_solicitud === d.id_solicitud); if (filt("DESPACHO", x => x.id_solicitud === so.id_solicitud).every(x => x.estado === "Entregado" || x.estado === "Cancelado")) so.estado = "Atendida"; });
+    logSql(`UPDATE despacho SET estado = 'Entregado', fecha_recibido = TO_DATE('${dmyhm(t)}','DD/MM/YYYY HH24:MI')\n WHERE id_despacho = ${id};`, res);
+    UI.flash = aviso("green", `Despacho N.º ${id} entregado`, "<span>Se guardó la fecha de recibido.</span>", "CHECK C_DESPACHO_RECIBIDO_CK");
+    save(); UI.keepScroll = true; render();
+  },
+  // Administrador
+  "rep-calc":() => { UI.params.calc = true; UI.keepScroll = true; render(); $$(".rep-bar").forEach(b => { const w = b.dataset.w; b.style.transition = "none"; b.style.width = "0%"; void b.offsetWidth; b.style.transition = ""; requestAnimationFrame(() => { b.style.width = w + "%"; }); }); logSql("BEGIN\n  P_REPARTO_PROPORCIONAL(1, 1, TO_DATE('28/10/2026','DD/MM/YYYY'));\nEND;  -- resultado en SOLICITUD_INSUMO.cantidad_asignada", {ok:true}); save(); },
+  "rep-run":() => {
+    const t = S.reparto.desde; const res = tx(() => pReparto(1, 1, t));
+    logSql(`BEGIN\n  P_REPARTO_PROPORCIONAL(1, 1, TO_DATE('${dmy(t)}','DD/MM/YYYY'));\nEND;`, res);
+    UI.flash = res.ok ? aviso("green", "Reparto ejecutado", `<span>${res.r.res.map(x => `Solicitud ${x.s.id_solicitud}: ${fmt(x.asignado)} de ${fmt(x.si.cantidad_requerida)} kg`).join(" · ")}. Quedan en estado Asignada.</span>`, "procedimiento P_REPARTO_PROPORCIONAL") : err(res.e);
+    save(); UI.keepScroll = true; render(); toBottom();
+  },
+  "per-g":el => { UI.params.g = el.dataset.v; UI.keepScroll = true; render(); },
+  "af-edit":el => { const d = Number(UI.params.id); const a = find("AFECTACION", x => x.id_desastre === d && x.id_municipio === el.dataset.v); UI.form.af = {niv:a.nivel_dano, por:String(a.porc_infraestructura), fa:a.falla_agua_energia}; UI.params.edit = el.dataset.v; UI.flash = null; UI.keepScroll = true; render(); },
+  "af-cancel":() => { UI.params.edit = null; UI.keepScroll = true; render(); },
+  "af-save":el => {
+    const d = Number(UI.params.id); const mid = el.dataset.v; const F = UI.form.af; const por = num(F.por);
+    const a = find("AFECTACION", x => x.id_desastre === d && x.id_municipio === mid);
+    if (!isFinite(por) || String(F.por).trim() === ""){ UI.flash = aviso("red", "Porcentaje no válido", "<span>Escriba un porcentaje entre 0 y 100.</span>", "CHECK C_AFECTACION_PORC_CK"); UI.keepScroll = true; render(); return; }
+    const res = tx(() => updAfectacion(a, {nivel_dano:F.niv, porc_infraestructura:por, falla_agua_energia:F.fa}));
+    logSql(`UPDATE afectacion SET nivel_dano = '${F.niv}', porc_infraestructura = ${por}, falla_agua_energia = '${F.fa}'\n WHERE id_desastre = ${d} AND id_municipio = '${mid}';`, res);
+    if (res.ok){ UI.params.edit = null; UI.flash = aviso("green", "Afectación actualizada", `<span>${esc(muni(mid).nombre)}: nivel ${F.niv}.</span>`); }
+    else UI.flash = aviso("red", "Cambio rechazado", `<span>${res.e.message.includes("CRITICO") ? "Un municipio solo es Crítico con más del 40 % de infraestructura comprometida o con falla de agua y energía." : res.e.message.includes("PORC") ? "El porcentaje debe estar entre 0 y 100." : esc(res.e.message)}</span>`, oraLine(res.e));
+    save(); render(); const s = $(".scr"); if (s) s.scrollTop = 0;
+  },
+  "cr-save":() => {
+    const F = UI.form.cr; const res = tx(() => { now(); insCuadResc({id_cuadrilla:F.cid, id_personal:F.pid}); });
+    logSql(`INSERT INTO cuadrilla_rescatista (id_cuadrilla, id_personal) VALUES (${F.cid}, ${F.pid});`, res);
+    UI.flash = res.ok ? aviso("green", "Rescatista asignado", `<span>${esc(nombreP(per(F.pid)))} quedó en la ${esc(find("CUADRILLA", c => c.id_cuadrilla === F.cid).nombre)}.</span>`, "trigger T_CUAD_RESC_VALIDAR") : err(res.e);
+    save(); UI.keepScroll = true; render();
+  }
+};
+function runRule(code){ const R = RULES.find(x => x.code === code); const res = tx(() => R.run(), false); ruleRes[code] = res; logSql(R.sql + "\n-- prueba de regla: ROLLBACK", res); save(); }
+function syncCenso(){ if (!UI.form.censo) return; $$("[data-cf]").forEach(el => { const [k, f] = el.dataset.cf.split(":"); const r = UI.form.censo.rows[Number(k)]; if (r) r[f] = el.type === "checkbox" ? el.checked : el.value; }); }
+
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-a]"); if (!el) return;
+  const fn = A[el.dataset.a]; if (!fn) return;
+  e.preventDefault(); fn(el, e);
+});
+document.addEventListener("input", e => {
+  const t = e.target;
+  if (t.dataset.cf){ syncCenso(); return; }
+  if (t.id === "ent-cant"){ UI.params.cant = t.value; return; }
+  if (t.id === "scan-cod"){ UI.params.cod = t.value; return; }
+  const k = t.dataset.k; if (!k) return;
+  const fld = t.closest(".fld"); if (fld) fld.classList.remove("bad");
+  if (k === "jdoc") UI.login.jdoc = t.value;
+  else if (k === "sol-cant") UI.form.sol.cant = t.value;
+  else if (k === "lt-cant") UI.form.lote.cant = t.value;
+  else if (k === "dp-placa") UI.form.desp.placa = t.value;
+  else if (k === "dp-cond") UI.form.desp.cond = t.value;
+  else if (k === "af-por") UI.form.af.por = t.value;
+  else if (k === "sim"){ UI.form.sim = Number(t.value); const o = $("#sim-out"); if (o) o.innerHTML = simOut(t.value); }
+});
+document.addEventListener("change", e => {
+  const t = e.target; if (t.dataset.cf){ syncCenso(); return; } const k = t.dataset.k; if (!k) return;
+  if (k === "sol-mid") UI.form.sol.mid = t.value;
+  else if (k === "lt-iid"){ UI.form.lote.iid = Number(t.value); UI.keepScroll = true; render(); }
+  else if (k === "lt-origen") UI.form.lote.origen = t.value;
+  else if (k === "lt-rec") UI.form.lote.rec = t.value;
+  else if (k === "lt-ven") UI.form.lote.ven = t.value;
+  else if (k === "dp-sid"){ UI.form.desp.sid = Number(t.value); UI.flash = null; UI.keepScroll = true; render(); }
+  else if (k === "af-niv") UI.form.af.niv = t.value;
+  else if (k === "af-fa") UI.form.af.fa = t.value;
+  else if (k === "cr-pid") UI.form.cr.pid = Number(t.value);
+  else if (k === "cr-cid") UI.form.cr.cid = Number(t.value);
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && UI.panelOpen){ UI.panelOpen = false; render(); }
+  if (e.key === "Enter" && e.target.id === "l-doc") A.dologin();
+  if (e.key === "Enter" && e.target.id === "scan-cod") A["leer-cod"]();
+});
+
+load();
+render();
+window.__MA = {get DB(){ return DB; }, get S(){ return S; }, get UI(){ return UI; }, sha256, RULES, CONSULTAS, runRule, A};
+})();
+</script>
